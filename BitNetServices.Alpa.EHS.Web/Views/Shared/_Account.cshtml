@@ -1,0 +1,62 @@
+﻿@using System.Security.Policy
+@using BitNetServices.Alpa.EHS.Common.Model.Catalog
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+@{
+    var users = Context.Session.GetObjectFromJson<List<UserModel>>("SessionUsers");
+    UserModel user = null;
+    if (users != null && users.Count() > 0)
+    {
+        var urlPath = Context.Request.Path.Value;
+        string[] urlPieces = urlPath.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+        if (urlPieces.Length > 0)
+        {
+            var tenantName = urlPieces[0];
+
+            var usersList = users.Where(a => a.TenantUrlPiece == tenantName);
+            if (usersList != null && usersList.Count() > 0)
+            {
+                user = usersList.Last();
+            }
+        }
+    }
+}
+
+<!-- top navigation -->
+<div class="top_nav">
+    <div class="nav_menu">
+        <div class="nav toggle">
+            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+        </div>
+
+        <nav class="nav navbar-nav">
+
+            @{
+                if (user != null)
+                {
+                    <ul class=" navbar-right">
+                        <li class="nav-item dropdown open" style="padding-left: 15px;">
+
+                            <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+                                <img src="~/images/img.jpg" alt="">Welcome, @(user.Employee.Name)
+                            </a>
+                            <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
+                                @*<a class="dropdown-item" href="javascript:;">Profile</a>*@
+                                <a class="dropdown-item" href="@( user.SecurityRole.Name == "Admin" ? Url.Action("Index", "Master") : "#")">
+                                    <span class="badge bg-red pull-right"></span>
+                                    <span>Settings</span>
+                                </a>
+                                @*<a class="dropdown-item" href="javascript:;">Help</a>*@
+                                <a class="dropdown-item" href="@Url.Action("LogOut", "Account", new { email = user.Email, tenant = user.TenantName})"><i class="fa fa-sign-out pull-right"></i>Logout</a>
+                            </div>
+                        </li>
+                    </ul>
+                }
+            }
+        </nav>
+    </div>
+</div>
+<!-- /top navigation -->

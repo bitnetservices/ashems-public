@@ -1,0 +1,71 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model IEnumerable<BitNetServices.Alpa.EHS.Common.Model.Tenant.Master.AreaOrBuildingModel>
+<!-- page content -->
+
+    <style>
+        .delete-section {
+            display: inline;
+        }
+    </style>
+
+<div class="x_content">
+    <div class="table-responsive">
+        <table id="datatable-buttons" class="table table-striped jambo_table bulk_action" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>                   
+                    <th>Created On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model != null)
+                    {
+
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                <td>
+                                    @item.Location?.Name
+                                </td>                              
+                                <td>
+                                    @item.CreatedOn
+                                </td>
+                                <td>
+                                    @if (item.IsEditable)
+                                    {
+                                        <a class="masterEdit" data-toggle="modal" data-target=".bs-example-modal-lg.aob" data-id="@item.RowId" data-ctr="areaorbuilding" href="#">Edit</a>
+                                        <div class="delete-section">
+                                            <a class="delete-link" href="@Url.Action("removeareaOrBuilding", new {id = item.AreaOrBuildingId})" data-ctr="areaorbuilding/remove">Delete</a>
+                                            <div class="btn btn-primary delete-confirm" style="display:none" data-delete-id="@item.AreaOrBuildingId">Confirm Delete</div>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- page content -->
+<div class="modal fade bs-example-modal-lg aob" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" id="masterModalContent-areaorbuilding">
+
+    </div>
+</div>

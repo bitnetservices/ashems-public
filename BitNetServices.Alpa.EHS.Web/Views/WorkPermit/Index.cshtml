@@ -1,0 +1,88 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.WorkPermitSummaryViewModel
+
+@{
+    Layout = "_WorkPermit";
+}
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Work Permit</h3>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            <table id="datatable-buttons" class="table table-striped table-light" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Issuing Dept.</th>
+                        <th>Approver</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model != null)
+                        {
+
+                            foreach (var item in Model.WorkPermits)
+                            {
+                                        <tr>
+                                            <td>@item.Location?.Name / @item.AreaOrBuilding?.Name</td>
+                                            <td>@item.StartDate.ToString("dd/MMM/yyyy")</td>
+                                            <td>@item.EndDate.ToString("dd/MMM/yyyy")</td>
+                                            <td>@item.ResponsibleDepartment?.Name</td>
+                                            <td>@item.EmployeeAssigned?.Name</td>
+                                            <td>@item.WorkPermitStage.Name</td>
+                                            <td>
+                                                @if (item.CreatedBy == Model.User.Employee.RowId
+                                     && item.ResponsibleDepartmentId != null)
+                                                {
+                                                    if (item.WorkPermitStageId == 1)
+                                                    {
+                                                        @Html.ActionLink("Edit | ", "Create", "WorkPermit", new { id = item.RowId })
+                                                    }
+
+                                                }
+                                                @if (item.ResponsibleDepartmentId == Model.User.Employee.DepartmentId && item.EmployeeAssignedId == null)
+                                                {
+                                                    if (Model.User.SecurityRole.Name == "Approver" || Model.User.SecurityRole.Name == "Admin")
+                                                    {
+                                                        @Html.ActionLink("Issue | ", "Issue", "WorkPermit", new { id = item.RowId })
+                                                    }
+                                                }
+
+                                                @if (item.EmployeeAssignedId != null && item.ResponsibleDepartmentId == Model.User.Employee.DepartmentId)
+                                                {
+                                                    if (item.WorkPermitStageId == 2)
+                                                    {
+                                                        @Html.ActionLink("Approve / Reject", "update", "WorkPermit", new { id = item.RowId })
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

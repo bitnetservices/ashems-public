@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+
+@inject IViewLocalizer Localizer
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
+@{
+    Layout = "_Layout";
+}
+
+<div class="clearfix"></div>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="right_col" role="main">
+            <div class="">
+                <h1>Unauthorise Access</h1>
+                <h2>
+                    Alpa - Safety, Health, and Environment Management System (A-SHEMS) prevents any unauthorise access to made to accessible area. Please make sure you are registered by your administrator and using right links to connect.
+                </h2>
+                <div class="navbar-right">
+                    <a class="btn btn-success" href="/auth/signin">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /page content -->

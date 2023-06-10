@@ -1,0 +1,705 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.HazardIncidentViewModel
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Localizer["Alpa EHS Hub"]</title>
+    <!-- Bootstrap -->
+    <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- bootstrap-wysiwyg -->
+    <link href="~/vendors/google-code-prettify/src/prettify.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        .breakhere {
+            page-break-before: always !important;
+        }
+
+        .floatnone {
+            float: none
+        }
+
+        .overflow {
+            overflow: visible
+        }
+    </style>
+</head>
+
+<body style="background-color: transparent" class="floatnone overflow">
+    <div class="row floatnone">
+        <div class="col-sm-12 floatnone">
+            <div class="card-box table-responsive">
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td>
+                                Logo
+                            </td>
+                            <td colspan="2" class="align-middle" align="center">
+                                <strong>Hazard/Incident Reporting Form</strong>
+                            </td>
+                            <td>
+                                <img src="~/images/logo.png" width="120" height="90" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Hazard Report Number</strong>
+                            </td>
+                            <td colspan="3">
+                                @Model.HazardIncidentFormat
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Reported By</strong>
+                            </td>
+                            <td>
+                                @Model.ReportedBy
+                            </td>
+                            <td>
+                                <strong>Employee</strong>
+                            </td>
+                            <td>
+                                @Model.EmployeeId
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <td>
+                                <strong>Designation</strong>
+                            </td>
+                            <td>
+                                @Model.EmployeeDesignation
+                            </td>
+                            <td>
+                                <strong>Manager Name</strong>
+                            </td>
+                            <td>
+                                @Model.EmployeeManager
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Date of Reporting</strong>
+                            </td>
+                            <td>
+                                @Model.ReportingDate.ToString("dd/MMMM/yyyy")
+                            </td>
+                            <td>
+                                <strong>Time of Reporting</strong>
+                            </td>
+                            <td>
+                                @Model.IncidentDate?.ToString("hh:mm")
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Location Of Hazard</strong>
+                            </td>
+                            <td>
+                                @Model.LocationOfHazard?.Name
+                            </td>
+                            <td>
+                                <strong>Area/Building</strong>
+                            </td>
+                            <td>
+                                @Model.AreaOrBuilding?.Name
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Identifier (If any)</strong>
+                            </td>
+                            <td colspan="2">
+                                @Model.SpecificId
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row floatnone">
+        <div class="col-sm-12 floatnone">
+            <div class="card-box table-responsive">
+                @if (Model.CategoryOfHazardId >= 1 && Model.CategoryOfHazardId <= 3)
+                {
+                    <table class="table table-striped table-bordered" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="6">
+                                    <h3>@Model.CategoryOfHazard?.Name</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Type of Hazard</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.TypeOfHazard?.Name
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of Hazard:</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:180px">
+                                    @Model.Description
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of Any Immediate Action Taken (If any):</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:180px">
+                                    @Model.ImmediateAction
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong> Details of Corrective Action to be Taken</strong>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td colspan="4" style="height:190px">
+                                    @Model.CorrectiveActionToBeTaken
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-striped table-bordered" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Responsible Department</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.ResponsibleDepartment?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Name of the Person Assigned</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.EmployeeAssigned?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Designation</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.EmployeeAssignedDesignation
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Estimated Date of Completion</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.CompletionETA.HasValue ? Model.CompletionETA.Value.ToString("dd/MMMM/yyyy") : "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong> Status of the Hazard</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.StatusOfHazard?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Actual Date of Completion</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.DateOfCompletion.HasValue ? Model.DateOfCompletion.Value.ToString("dd/MMMM/yyyy") : "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Reason for Delay/Details of Completion</strong>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:160px">
+                                    @Model.ReasonForDelay
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-striped table-bordered page-break" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="6">
+                                    <h3>Provided Evidence(s)</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <img src="@Model.HazardCameraCapture" style="page-break-inside: avoid" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="4">
+                                    <img src="@Model.HazardCompleteCameraCapture" style="page-break-inside: avoid" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row floatnone">
+        <div class="col-sm-12 floatnone">
+            <div class="card-box table-responsive">
+                @if (Model.CategoryOfHazardId == 4)
+                {
+                    <table class="table table-striped table-bordered page-break" style="width:100%;" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="6">
+                                    <h3>@Model.CategoryOfHazard?.Name</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Type of Hazard</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.IncidentTypeOfHazard?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Category of Injured Person</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.InjuredPersonCategory?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Name of the Injured Person</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.InjuredPersonCategory?.Name.ToLower() == "employee" ? Model.InjuredEmployee?.Name : Model.InjuredPersonCategory?.Name.ToLower() == "contractor" ? Model.InjuredContractor?.Name : Model.InjuredIntern)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Designation</strong>
+                                </td>
+                                <td>
+                                    @Model.InjuredEmployeeDesignation
+                                </td>
+                                <td>
+                                    <strong>Manager</strong>
+                                </td>
+                                <td>
+                                    @Model.InjuredEmployeeManager
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Area/Building</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.LocationOfIncident?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Location of Incident</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.AreaOrBuildingIncident?.Name
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Task Being Carried Out</strong>
+                                </td>
+                                <td colspan="2" style="height: 80px">
+                                    @(Model.IncidentTaskCarrieds?.Count > 0 ? String.Join(", ", Model.IncidentTaskCarrieds.Select(select => select.TaskCarried.Name)) : "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of Task Being Carried Out</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:160px">
+                                    @Model.TaskBeingCarriedOutDescription
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Machine(s) Involved</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.MachinesInvolved
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Tool(s) Involved</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.ToolsInvolved
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Property(ies) Involved</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.PropoertyInvolved
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Vehicle(s) Involved</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.VehicleInvolved
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-striped table-bordered page-break" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of the Incident</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:150px">
+                                    @Model.IncidentDescription
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>This Employee Works</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.EmploymentType?.Name
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Date of Joining</strong>
+                                </td>
+                                <td>
+                                    @(Model.DateofJoining == null ? String.Empty : Model.DateofJoining.Value.ToString("dd/MMMM/yyyy"))
+                                </td>
+                                <td>
+                                    <strong>Months Doing This Job</strong>
+                                </td>
+                                <td>
+                                    @Model.MonthsDoingThisJob
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Injured Body Part(s)</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.IncidentBodyParts?.Count > 0 ? String.Join(", ", Model.IncidentBodyParts.Select(select => select.BodyPart.Name)) : "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Name of Witness(es), If any</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.NameOfWitness
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Statement of Witness(es), If any</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:180px">
+                                    @Model.StatementOfWitness
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <strong>Consequence(s)</strong>
+                                </td>
+                                <td>
+                                    @Model.Consequence?.Name
+                                </td>
+                                <td>
+                                    <strong>Result(s)</strong>
+                                </td>
+                                <td>
+                                    @Model.IncidentResult?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Anticipated Absence</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.IncidentAnticipatedAbsence?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Has the Incident Occurred Previously?</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.HasIncidentOccurredPreviously ? "Yes" : "No")
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>How can Future Incidents be Prevented?</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.IncidentFuturePreventions?.Count > 0 ? String.Join(", ", Model.IncidentFuturePreventions.Select(select => select.FuturePrevention.Name)) : "")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Recommendations to Prevent Recurrence</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:200px">
+                                    @Model.RecommendationsToPreventRecurrence
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Responsible Department</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.ResponsibleIncidentDepartment?.Name
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Name of the Assigned Person</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.IncidentEmployeeAssigned?.Name
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Assigned Person Designation</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.IncidentEmployeeAssignedDesignation
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-striped table-bordered page-break" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+
+                            <tr>
+                                <td colspan="4">
+                                    <strong> Details of Corrective Action to be Taken</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:190px">
+                                    @Model.DetailsOfCorrectiveActionTaken
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Estimated Date of Completion</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.CompletionETA == null ? String.Empty : Model.CompletionETA.Value.ToString("dd/MMMM/yyyy"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong> Status of the Hazard</strong>
+                                </td>
+                                <td colspan="2">
+                                    @Model.StatusOfHazard?.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Actual Date of Completion</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.DateOfCompletion == null ? String.Empty : Model.DateOfCompletion.Value.ToString("dd/MMMM/yyyy"))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Reason for Delay/Details of Completion</strong>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:190px">
+                                    @Model.ReasonForDelay
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-striped table-bordered page-break" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="6">
+                                    <h3>Provided Evidence(s)</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <img src="@Model.IncidentCameraCapture" style="page-break-inside: avoid" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="6">
+                                    <img src="@Model.IncidentCompleteCameraCapture" style="page-break-inside: avoid" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                }
+            </div>
+        </div>
+    </div>
+    <div class="row floatnone">
+        <div class="col-sm-12 floatnone">
+            <div class="card-box table-responsive ">
+                @if (Model.CategoryOfHazardId == 5)
+                {
+                    <table class="table table-striped table-bordered  page-break" style="width:100%" cellspacing="1" cellpadding="1">
+                        <tbody>
+                            <tr>
+                                <td colspan="6">
+                                    <h3>@Model.CategoryOfHazard?.Name</h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of Property Damaged</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:150px">
+                                    @Model.DescriptionPropertyDamaged
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of Damage</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:150px">
+                                    @Model.DamageDescription
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <strong>Description of How the Damage Occurred</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" style="height:150px">
+                                    @Model.HowDamageOccured
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Approximate Cost of Repairs ($)</strong>
+                                </td>
+                                <td colspan="2" align="right">
+                                    @Model.ApproximateRepairCost
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Approximate Cost of Replacement ($)</strong>
+                                </td>
+                                <td colspan="2" align="right">
+                                    @Model.ApproximateReplacementCost
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <strong>Does the Property Covered with Insurance</strong>
+                                </td>
+                                <td colspan="2">
+                                    @(Model.PropertyCoveredWithInsurance.HasValue ? Model.PropertyCoveredWithInsurance.Value ? "Yes" : "No" : "-")
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</body>
+</html>

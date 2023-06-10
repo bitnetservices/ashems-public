@@ -1,0 +1,529 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.HazardIncidentViewModel
+
+@{
+    Layout = "_HazardIncident";
+}
+
+<div class="page-title">
+    <div class="title_left">
+        <a type="button" class="btn btn-info" asp-action="Index" asp-controller="HazardIncidents">Back</a> <h3>Hazard and Incident Management</h3>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+
+@using (Html.BeginForm("Create", "HazardIncidents", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <p class="text-danger">
+        @ViewBag.ErrorMessage
+        @Html.ValidationSummary()
+    </p>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Hazard Information</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.HiddenFor(m => m.HazardIncidentId)
+                                        @Html.HiddenFor(m => m.CreatedOn)
+                                        @Html.HiddenFor(m => m.CreatedBy)
+                                        @Html.HiddenFor(m => m.HazardIncidentStageId)
+                                        @Html.LabelFor(m => m.HazardIncidentFormat)
+                                        @Html.TextBoxFor(m => m.HazardIncidentFormat, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.HazardIncidentFormat, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ReportedBy)
+                                        @Html.TextBoxFor(m => m.ReportedBy, new { @class = "form-control", required = "required" })
+                                        @Html.ValidationMessageFor(m => m.ReportedBy, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmployeeId)
+                                        @Html.TextBoxFor(model => model.EmployeeId, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmployeeDesignation)
+                                        @Html.TextBoxFor(m => m.EmployeeDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmployeeManager)
+                                        @Html.TextBoxFor(m => m.EmployeeManager, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ReportingDate)
+                                        @Html.TextBoxFor(m => m.ReportingDate, "{0:dd/MMMM/yyyy}", new { @class = "form-control", type = "text" })
+                                        @Html.ValidationMessageFor(m => m.ReportingDate, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentDate)
+                                        @Html.TextBoxFor(m => m.IncidentDate, "{0:hh:mm}", new { @class = "form-control", type = "text" })
+                                        @Html.ValidationMessageFor(m => m.IncidentDate, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.LocationOfHazardId)
+                                        @Html.DropDownListFor(model => model.LocationOfHazardId, Model.LocationList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.LocationOfHazardId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.AreaOrBuildingId)
+                                        @Html.DropDownListFor(model => model.AreaOrBuildingId, Model.AreaOrBuildingList, "--Select Location First--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.AreaOrBuildingId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.SpecificId)
+                                        @Html.TextBoxFor(m => m.SpecificId, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.SpecificId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.CategoryOfHazardId)
+                                        @Html.DropDownListFor(model => model.CategoryOfHazardId, Model.HazardCategoryList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.CategoryOfHazardId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-incident-near-miss-unsafe-act-unsafe-condition">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Near Miss or Unsafe Act or Unsafe Condition</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.TypeOfHazardId)
+                                        @Html.DropDownListFor(model => model.TypeOfHazardId, Model.HazardTypeList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.TypeOfHazardId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.HazardTypeOtherDescription)
+                                        @Html.TextBoxFor(m => m.HazardTypeOtherDescription, new { @class = "form-control", })
+                                        @Html.ValidationMessageFor(m => m.HazardTypeOtherDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.Description)
+                                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", })
+                                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.ImmediateAction)
+                                        @Html.TextAreaFor(m => m.ImmediateAction, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ImmediateAction, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.HazardCameraCapture)
+                                        <br />
+                                        <img id="imageHazardCameraCapture" src="@Model.HazardCameraCapture">
+                                        <br />
+                                        <a class="fileHazardCameraCapture btn btn-dark" data-toggle="modal" data-folder="hazardincidents" data-target=".bs-example-modal-lg.upload" data-id="@Model.HazardIncidentFormat" data-update-img="imageHazardCameraCapture" data-update-ctr="HazardCameraCapture" data-ctr='@Url.Action("Upload", "Files")' href="#">Upload</a>
+                                        @Html.HiddenFor(m => m.HazardCameraCapture, new { @class = "form-control", @required = "required" })
+                                        @Html.ValidationMessageFor(m => m.HazardCameraCapture, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ResponsibleDepartmentId)
+                                        @Html.DropDownListFor(model => model.ResponsibleDepartmentId, Model.DepartmentList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ResponsibleDepartmentId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" id="hazard-incident-property-damage">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Property Damage</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.DescriptionPropertyDamaged)
+                                        @Html.TextAreaFor(m => m.DescriptionPropertyDamaged, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.DescriptionPropertyDamaged, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.DamageDescription)
+                                        @Html.TextAreaFor(m => m.DamageDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.DamageDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.HowDamageOccured)
+                                        @Html.TextAreaFor(m => m.HowDamageOccured, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.HowDamageOccured, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.ApproximateRepairCost)
+                                        @Html.TextBoxFor(m => m.ApproximateRepairCost, new { @class = "form-control", @type = "number", @min = "0", @step = "0.01", @value = "0" })
+                                        @Html.ValidationMessageFor(m => m.ApproximateRepairCost, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.ApproximateReplacementCost)
+                                        @Html.TextBoxFor(m => m.ApproximateReplacementCost, new { @class = "form-control", @type = "number", @min = "0", @step = "0.01", @value = "0" })
+                                        @Html.ValidationMessageFor(m => m.ApproximateReplacementCost, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.PropertyCoveredWithInsurance)
+                                        @Html.CheckBox("PropertyCoveredWithInsurance", Model.Investigation?.SceneSecured ?? false, new { @class = "form-control  js-switch" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-incident-personnel-injury">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Personnel Injury</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentTypeOfHazardId)
+                                        @Html.DropDownListFor(model => model.IncidentTypeOfHazardId, Model.HazardTypeList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentTypeOfHazardId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentHazardTypeOtherDescription)
+                                        @Html.TextBoxFor(m => m.IncidentHazardTypeOtherDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentHazardTypeOtherDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.InjuredPersonCategoryId)
+                                        @Html.DropDownListFor(model => model.InjuredPersonCategoryId, Model.InjuredPersonCategoryList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.InjuredPersonCategoryId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.InjuredContractorId)
+                                        @Html.DropDownListFor(model => model.InjuredContractorId, Model.ContractorList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.InjuredContractorId, "", new { @class = "text-danger" })
+
+                                        @Html.LabelFor(m => m.InjuredIntern)
+                                        @Html.TextBoxFor(m => m.InjuredIntern, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.InjuredIntern, "", new { @class = "text-danger" })
+
+                                        @Html.LabelFor(m => m.InjuredEmployeeId)
+                                        <input type="text" name="InjuredEmployee" id="InjuredEmployee" class="form-control" value="@Model.InjuredEmployee?.Name" />
+                                        @Html.HiddenFor(m => m.InjuredEmployeeId)
+                                        @Html.ValidationMessageFor(m => m.InjuredEmployeeId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.InjuredEmployeeDesignation)
+                                        @Html.TextBoxFor(m => m.InjuredEmployeeDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.InjuredEmployeeDesignation, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.InjuredEmployeeManager)
+                                        @Html.TextBoxFor(m => m.InjuredEmployeeManager, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+
+
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.LocationOfIncidentId)
+                                        @Html.DropDownListFor(model => model.LocationOfIncidentId, Model.LocationList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.LocationOfIncidentId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.AreaOrBuildingIncidentId)
+                                        @Html.DropDownListFor(model => model.AreaOrBuildingIncidentId, new SelectList(Model.AreaOrBuildingList, "Value", "Text"), null, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.AreaOrBuildingIncidentId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.NameOfWitness)
+                                        @Html.TextBoxFor(m => m.NameOfWitness, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentTaskCarriedId)
+                                        @Html.ListBoxFor(model => model.IncidentTaskCarriedId, new MultiSelectList(Model.TasksCarriedList, "Value", "Text", Model.IncidentTaskCarriedId), new { @class = "form-control", @multiple = "multiple" })
+                                        @Html.ValidationMessageFor(m => m.IncidentTaskCarriedId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.TaskBeingCarriedOutOtherDescription)
+                                        @Html.TextBoxFor(m => m.TaskBeingCarriedOutOtherDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.TaskBeingCarriedOutOtherDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.TaskBeingCarriedOutDescription)
+                                        @Html.TextAreaFor(m => m.TaskBeingCarriedOutDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.TaskBeingCarriedOutDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmploymentTypeId)
+                                        @Html.DropDownListFor(model => model.EmploymentTypeId, Model.EmploymentTypeList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.EmploymentTypeId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.DateofJoining)
+                                        @Html.TextBoxFor(m => m.DateofJoining, "{0:dd/MMMM/yyyy}", new { @class = "form-control", type = "text" })
+                                        @Html.ValidationMessageFor(m => m.DateofJoining, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.MonthsDoingThisJob)
+                                        @Html.TextBoxFor(m => m.MonthsDoingThisJob, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.MonthsDoingThisJob, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.IncidentDescription)
+                                        @Html.TextAreaFor(m => m.IncidentDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.StatementOfWitness)
+                                        @Html.TextAreaFor(m => m.StatementOfWitness, new { @class = "form-control" })                                       
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentInjuryTypeId)
+                                        @Html.ListBoxFor(model => model.IncidentInjuryTypeId, new MultiSelectList(Model.InjuryTypeList, "Value", "Text", Model.IncidentInjuryTypeId), new { @class = "form-control", @multiple = "multiple" })
+                                        @Html.ValidationMessageFor(m => m.IncidentInjuryTypeId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentInjuryTypeOtherDescription)
+                                        @Html.TextBoxFor(m => m.IncidentInjuryTypeOtherDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentInjuryTypeOtherDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentBodyPartId)
+                                        @Html.ListBoxFor(model => model.IncidentBodyPartId, new MultiSelectList(Model.BodyPartList, "Value", "Text", Model.IncidentBodyPartId), new { @class = "form-control", @multiple = "multiple" })
+                                        @Html.ValidationMessageFor(m => m.IncidentBodyPartId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.MachinesInvolved)
+                                        @Html.TextBoxFor(m => m.MachinesInvolved, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.MachinesInvolved, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.ToolsInvolved)
+                                        @Html.TextBoxFor(m => m.ToolsInvolved, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ToolsInvolved, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.PropoertyInvolved)
+                                        @Html.TextBoxFor(m => m.PropoertyInvolved, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.PropoertyInvolved, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.VehicleInvolved)
+                                        @Html.TextBoxFor(m => m.VehicleInvolved, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.VehicleInvolved, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.IncidentCameraCapture)
+                                        <br />
+                                        <img id="imageIncidentCameraCapture" src="@Model.IncidentCameraCapture">
+                                        <br />
+                                        <br />
+                                        <a class="fileIncidentCameraCapture btn btn-dark" data-toggle="modal" data-folder="hazardincidents" data-target=".bs-example-modal-lg.upload" data-id="@Model.HazardIncidentFormat" data-update-img="imageIncidentCameraCapture" data-update-ctr="IncidentCameraCapture" data-ctr='@Url.Action("Upload", "Files")' href="#">Upload</a>
+                                        @Html.HiddenFor(m => m.IncidentCameraCapture, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.IncidentCameraCapture, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ConsequenceId)
+                                        @Html.DropDownListFor(model => model.ConsequenceId, Model.ConsequenceList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ConsequenceId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.IncidentResultId)
+                                        @Html.DropDownListFor(model => model.IncidentResultId, Model.IncidentResultList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentResultId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.IncidentAnticipatedAbsenceId)
+                                        @Html.DropDownListFor(model => model.IncidentAnticipatedAbsenceId, Model.AnticipatedAbsenceList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentAnticipatedAbsenceId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.HasIncidentOccurredPreviously)
+                                        @Html.CheckBoxFor(m => m.HasIncidentOccurredPreviously, new { @class = "form-control js-switch" })
+                                    </div>
+                                    <div class="col-md-6">
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentFuturePreventionId)
+                                        @Html.ListBoxFor(model => model.IncidentFuturePreventionId, new MultiSelectList(Model.FuturePreventionList, "Value", "Text", Model.IncidentFuturePreventionId), new { @class = "form-control", @multiple = "multiple" })
+                                        @Html.ValidationMessageFor(m => m.IncidentFuturePreventionId, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentFuturePreventionOtherDescription)
+                                        @Html.TextBoxFor(m => m.IncidentFuturePreventionOtherDescription, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.IncidentFuturePreventionOtherDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.RecommendationsToPreventRecurrence)
+                                        @Html.TextAreaFor(m => m.RecommendationsToPreventRecurrence, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.RecommendationsToPreventRecurrence, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ResponsibleIncidentDepartmentId)
+                                        @Html.DropDownListFor(model => model.ResponsibleIncidentDepartmentId, Model.DepartmentList, "--Select--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.ResponsibleIncidentDepartmentId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_content">
+                    <div class="col-md-10 right">
+                        <input type="submit" name="submit" value="Save" class="btn btn-primary" />
+                        <input type="submit" name="submit" value="Submit" class="btn btn-success" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /page content -->
+}
+
+
+<!-- page content -->
+<div class="modal fade bs-example-modal-lg upload" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" id="uploadModalContent">
+
+    </div>
+</div>

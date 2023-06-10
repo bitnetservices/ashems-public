@@ -1,0 +1,788 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.HazardIncidentViewModel
+
+@{
+    Layout = "_HazardIncident";
+}
+
+<div class="page-title">
+    <div class="title_left">
+        <a type="button" class="btn btn-info" asp-action="Investigation" asp-controller="HazardIncidents">Back</a> <h3>Hazard and Incident Management - Investigation</h3>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+
+@using (Html.BeginForm("InvestigationUpdate", "HazardIncidents", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <p class="text-danger">
+        @ViewBag.ErrorMessage
+    </p>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Hazard Information</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.HiddenFor(m => m.HazardIncidentId)
+                                        @Html.HiddenFor(m => m.CreatedOn)
+                                        @Html.HiddenFor(m => m.HazardIncidentStageId)
+                                        @Html.LabelFor(m => m.HazardIncidentFormat)
+                                        @Html.TextBoxFor(m => m.HazardIncidentFormat, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ReportedBy)
+                                        @Html.TextBoxFor(m => m.ReportedBy, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmployeeId)
+                                        @Html.TextBoxFor(model => model.EmployeeId, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmployeeDesignation)
+                                        @Html.TextBoxFor(m => m.EmployeeDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmployeeManager)
+                                        @Html.TextBoxFor(m => m.EmployeeManager, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ReportingDate)
+                                        @Html.TextBoxFor(m => m.ReportingDate, "{0:dd/MMMM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+
+
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentDate)
+                                        @Html.TextBoxFor(m => m.IncidentDate, "{0:hh:mm tt}", new { @class = "form-control", type = "text", @readonly = "readonly" })
+
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.LocationOfHazardId)
+                                        @* @Html.DropDownListFor(model => model.LocationOfHazardId, Model.LocationList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.LocationOfHazard.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.LocationOfHazardId)
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.AreaOrBuildingId)
+                                        @*@Html.DropDownListFor(model => model.AreaOrBuildingId, Model.AreaOrBuildingList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.AreaOrBuilding.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.AreaOrBuildingId)
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.SpecificId)
+                                        @Html.TextBoxFor(m => m.SpecificId, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.CategoryOfHazardId)
+                                        @*@Html.DropDownListFor(model => model.CategoryOfHazardId, Model.HazardCategoryList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.CategoryOfHazard.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.CategoryOfHazardId)
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-assign-incident-near-miss-unsafe-act-unsafe-condition">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Near Miss or Unsafe Act or Unsafe Condition</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.TypeOfHazardId)
+                                        @*@Html.DropDownListFor(model => model.TypeOfHazardId, Model.HazardTypeList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.TypeOfHazard.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.TypeOfHazardId)
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.Description)
+                                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.ImmediateAction)
+                                        @Html.TextAreaFor(m => m.ImmediateAction, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.ImmediateAction, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        <img id="imageHazardCameraCapture" src="@Model.HazardCameraCapture">
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ResponsibleDepartmentId)
+                                        @*@Html.DropDownListFor(model => model.ResponsibleDepartmentId, Model.DepartmentList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.ResponsibleDepartment.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.ResponsibleDepartmentId)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-update-incident-near-miss-unsafe-act-unsafe-condition">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Employee Assignment <small>Near Miss or Unsafe Act or Unsafe Condition</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.EmployeeAssignedId)
+                                    @*@Html.DropDownListFor(m => m.EmployeeAssignedId, Model.EmployeeList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                    @Html.TextBoxFor(m => m.EmployeeAssigned.Name, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.HiddenFor(m => m.EmployeeAssignedId)
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.EmployeeAssignedDesignation)
+                                    @Html.TextBoxFor(m => m.EmployeeAssignedDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.CorrectiveActionToBeTaken)
+                                    @Html.TextAreaFor(m => m.CorrectiveActionToBeTaken, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.CompletionETA)
+                                    @Html.TextBoxFor(m => m.CompletionETA, "{0:dd/MMMM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-update-incident-near-miss-unsafe-act-unsafe-condition">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Employee Update <small>Near Miss or Unsafe Act or Unsafe Condition</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.StatusOfHazardId)
+                                   @* @Html.DropDownListFor(m => m.StatusOfHazardId, Model.HazardStatusList, "--Select--", new { @class = "form-control" })*@
+                                    
+                                    @Html.TextBoxFor(m => m.StatusOfHazard.Name, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.HiddenFor(m => m.StatusOfHazardId)
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.DateOfCompletion)
+                                    @Html.TextBoxFor(m => m.DateOfCompletion, "{0:dd/MMMM/yyyy}", new { @class = "form-control", required = "required", @type = "text", @readonly = "readonly" })                                   
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.HazardCompleteCameraCapture)
+                                    <br />
+                                    <img id="imageHazardCompleteCameraCapture" src="@Model.HazardCompleteCameraCapture">
+                                    @Html.HiddenFor(m => m.HazardCompleteCameraCapture, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.ReasonForDelay)
+                                    @Html.TextAreaFor(m => m.ReasonForDelay, new { @class = "form-control" , @readonly = "readonly"})                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-update-incident-property-damage">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Property Damage</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.DescriptionPropertyDamaged)
+                                        @Html.TextBoxFor(m => m.DescriptionPropertyDamaged, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.DescriptionPropertyDamaged, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.DamageDescription)
+                                        @Html.TextBoxFor(m => m.DamageDescription, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.DamageDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.HowDamageOccured)
+                                        @Html.TextBoxFor(m => m.HowDamageOccured, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.HowDamageOccured, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.ApproximateRepairCost)
+                                        @Html.TextBoxFor(m => m.ApproximateRepairCost, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.ApproximateRepairCost, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.ApproximateReplacementCost)
+                                        @Html.TextBoxFor(m => m.ApproximateReplacementCost, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.ApproximateReplacementCost, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.PropertyCoveredWithInsurance)
+                                        @Html.TextBoxFor(m => m.PropertyCoveredWithInsurance, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.PropertyCoveredWithInsurance, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-assign-incident-personnel-injury">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Personnel Injury</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_panel">
+
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentTypeOfHazardId)
+                                        @*@Html.DropDownListFor(model => model.IncidentTypeOfHazardId, Model.HazardTypeList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.IncidentTypeOfHazard.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.IncidentTypeOfHazardId)
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentHazardTypeOtherDescription)
+                                        @Html.TextBoxFor(m => m.IncidentHazardTypeOtherDescription, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(m => m.IncidentHazardTypeOtherDescription, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.InjuredPersonCategoryId)
+                                        @*@Html.DropDownListFor(model => model.InjuredPersonCategoryId, Model.InjuredPersonCategoryList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.InjuredPersonCategory.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.InjuredPersonCategoryId)
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.InjuredContractorId)
+                                        @*@Html.DropDownListFor(model => model.InjuredContractorId, Model.ContractorList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.InjuredContractor.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.InjuredContractorId)
+
+                                        @Html.LabelFor(m => m.InjuredIntern)
+                                        @Html.TextBoxFor(m => m.InjuredIntern, new { @class = "form-control", @readonly = "readonly" })
+
+                                        @Html.LabelFor(m => m.InjuredEmployeeId)
+                                        @* @Html.TextBoxFor(model => model.InjuredEmployeeId, new { @class = "form-control", @readonly = "readonly" })*@
+
+                                        @Html.TextBoxFor(m => m.InjuredEmployee.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.InjuredEmployeeId)
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.InjuredEmployeeDesignation)
+                                        @Html.TextBoxFor(m => m.InjuredEmployeeDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.InjuredEmployeeManager)
+                                        @Html.TextBoxFor(m => m.InjuredEmployeeManager, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+
+
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.LocationOfIncidentId)
+                                        @*@Html.DropDownListFor(model => model.LocationOfIncidentId, Model.LocationList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.LocationOfIncident.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.LocationOfIncidentId)
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.AreaOrBuildingIncidentId)
+                                        @*@Html.DropDownListFor(model => model.AreaOrBuildingIncidentId, new SelectList(Model.AreaOrBuildingList, "Value", "Text"), null, new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.AreaOrBuildingIncident.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.AreaOrBuildingIncidentId)
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.NameOfWitness)
+                                        @Html.TextBoxFor(m => m.NameOfWitness, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentTaskCarriedId)
+                                        @Html.ListBoxFor(model => model.IncidentTaskCarriedId, new MultiSelectList(Model.TasksCarriedList, "Value", "Text", Model.IncidentTaskCarriedId), new { @class = "form-control", @multiple = "multiple", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.TaskBeingCarriedOutOtherDescription)
+                                        @Html.TextBoxFor(m => m.TaskBeingCarriedOutOtherDescription, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.EmploymentTypeId)
+                                        @*@Html.DropDownListFor(model => model.EmploymentTypeId, Model.EmploymentTypeList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.EmploymentType.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.EmploymentTypeId)
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.DateofJoining)
+                                        @Html.TextBoxFor(m => m.DateofJoining, "{0:dd/MMMM/yyyy}", new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.MonthsDoingThisJob)
+                                        @Html.TextBoxFor(m => m.MonthsDoingThisJob, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.IncidentDescription)
+                                        @Html.TextAreaFor(m => m.IncidentDescription, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.StatementOfWitness)
+                                        @Html.TextAreaFor(m => m.StatementOfWitness, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentInjuryTypeId)
+                                        @Html.ListBoxFor(model => model.IncidentInjuryTypeId, new MultiSelectList(Model.InjuryTypeList, "Value", "Text", Model.IncidentInjuryTypeId), new { @class = "form-control", @multiple = "multiple", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentInjuryTypeOtherDescription)
+                                        @Html.TextBoxFor(m => m.IncidentInjuryTypeOtherDescription, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentBodyPartId)
+                                        @Html.ListBoxFor(model => model.IncidentBodyPartId, new MultiSelectList(Model.BodyPartList, "Value", "Text", Model.IncidentBodyPartId), new { @class = "form-control", @multiple = "multiple", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.MachinesInvolved)
+                                        @Html.TextBoxFor(m => m.MachinesInvolved, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.ToolsInvolved)
+                                        @Html.TextBoxFor(m => m.ToolsInvolved, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.PropoertyInvolved)
+                                        @Html.TextBoxFor(m => m.PropoertyInvolved, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.VehicleInvolved)
+                                        @Html.TextBoxFor(m => m.VehicleInvolved, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.IncidentCameraCapture)
+                                        <br />
+                                        <img id="imageIncidentCameraCapture" src="@Model.IncidentCameraCapture">
+                                        @Html.HiddenFor(m => m.IncidentCameraCapture, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ConsequenceId)
+                                        @*@Html.DropDownListFor(model => model.ConsequenceId, Model.ConsequenceList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.Consequence.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.ConsequenceId)
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.IncidentResultId)
+                                        @*@Html.DropDownListFor(model => model.IncidentResultId, Model.IncidentResultList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.IncidentResult.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.IncidentResultId)
+                                    </div>
+                                    <div class="col-md-3">
+                                        @Html.LabelFor(m => m.IncidentAnticipatedAbsenceId)
+                                        @*@Html.DropDownListFor(model => model.IncidentAnticipatedAbsenceId, Model.AnticipatedAbsenceList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.IncidentAnticipatedAbsence.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.IncidentAnticipatedAbsenceId)
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.HasIncidentOccurredPreviously)
+                                        @Html.CheckBoxFor(m => m.HasIncidentOccurredPreviously, new { @class = "form-control js-switch", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentFuturePreventionId)
+                                        @Html.ListBoxFor(model => model.IncidentFuturePreventionId, new MultiSelectList(Model.FuturePreventionList, "Value", "Text", Model.IncidentFuturePreventionId), new { @class = "form-control", @multiple = "multiple", @readonly = "readonly" })
+                                    </div>
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.IncidentFuturePreventionOtherDescription)
+                                        @Html.TextBoxFor(m => m.IncidentFuturePreventionOtherDescription, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.RecommendationsToPreventRecurrence)
+                                        @Html.TextAreaFor(m => m.RecommendationsToPreventRecurrence, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="x_content">
+                                    <div class="col-md-6">
+                                        @Html.LabelFor(m => m.ResponsibleIncidentDepartmentId)
+                                        @*@Html.DropDownListFor(model => model.ResponsibleIncidentDepartmentId, Model.DepartmentList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                        @Html.TextBoxFor(m => m.ResponsibleIncidentDepartment.Name, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.HiddenFor(m => m.ResponsibleIncidentDepartmentId)
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-update-incident-personnel-injury">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Personnel Injury</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.IncidentEmployeeAssignedId)
+                                    @*@Html.DropDownListFor(m => m.IncidentEmployeeAssignedId, Model.EmployeeList, "--Select--", new { @class = "form-control", @readonly = "readonly" })*@
+                                    @Html.TextBoxFor(m => m.IncidentEmployeeAssigned.Name, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.HiddenFor(m => m.IncidentEmployeeAssignedId)
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.IncidentEmployeeAssignedDesignation)
+                                    @Html.TextBoxFor(m => m.IncidentEmployeeAssignedDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.DetailsOfCorrectiveActionTaken)
+                                    @Html.TextAreaFor(m => m.DetailsOfCorrectiveActionTaken, new { @class = "form-control", @readonly = "readonly" })                                    
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.IncidentCompletionETA)
+                                    @Html.TextBoxFor(m => m.IncidentCompletionETA, "{0:dd/MMMM/yyyy}", new { @class = "form-control", @readonly = "readonly" })                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="hazard-update-incident-incident-personnel-injury">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Employee Update <small>Personnel Injury</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.IncidentStatusOfHazardId)
+                                    @*@Html.DropDownListFor(m => m.IncidentStatusOfHazardId, Model.HazardStatusList, "--Select--", new { @class = "form-control", @name = "personnelStatusOfHazardId" })*@                                   
+                                    @Html.TextBoxFor(m => m.IncidentStatusOfHazard.Name, new { @class = "form-control", @readonly = "readonly" })
+                                    @Html.HiddenFor(m => m.IncidentStatusOfHazardId)
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.IncidentDateOfCompletion)
+                                    @Html.TextBoxFor(m => m.IncidentDateOfCompletion, "{0:dd/MMMM/yyyy}", new { @class = "form-control", required = "required", @type = "text", @readonly = "readonly" })                                   
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.IncidentCompleteCameraCapture)
+                                    <br />
+                                    <img id="imageIncidentCompleteCameraCapture" src="@Model.IncidentCompleteCameraCapture">
+                                    @Html.HiddenFor(m => m.IncidentCompleteCameraCapture, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.IncidentReasonForDelay)
+                                    @Html.TextAreaFor(m => m.IncidentReasonForDelay, new { @class = "form-control", @readonly = "readonly" })                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" id="hazard-investigation-update">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Investigation Update</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                            <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 ">
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.HiddenFor(m => m.Investigation.HazardIncidentInvestigationId)
+                                    @Html.HiddenFor(m => m.Investigation.HazardIncidentId)
+                                    @Html.HiddenFor(m => m.Investigation.EmployeeId)
+                                    @Html.LabelFor(m => m.Investigation.EmployeeName)
+                                    @Html.TextBoxFor(model => model.Investigation.EmployeeName, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.EmployeeDesignation)
+                                    @Html.TextBoxFor(m => m.Investigation.EmployeeDesignation, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.EmployeeManager)
+                                    @Html.TextBoxFor(m => m.Investigation.EmployeeManager, new { @class = "form-control", @readonly = "readonly" })
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.MedicalEvalutionId)
+                                    @Html.DropDownListFor(model => model.Investigation.MedicalEvalutionId, Model.MedicalEvaluationList, "--Select--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.MedicalEvalutionId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-4">
+                                    @Html.LabelFor(m => m.Investigation.HazardSufficientlyControlled)
+                                    @Html.CheckBox("Investigation.HazardSufficientlyControlled", Model.Investigation.HazardSufficientlyControlled ?? false, new { @class = "form-control js-switch" })
+                                </div>
+                                <div class="col-md-4">
+                                    @Html.LabelFor(m => m.Investigation.MedicalassistanceProvided)
+                                    @Html.CheckBox("Investigation.MedicalassistanceProvided", Model.Investigation.MedicalassistanceProvided ?? false, new { @class = "form-control js-switch" })
+                                </div>
+                                <div class="col-md-4">
+                                    @Html.LabelFor(m => m.Investigation.SceneSecured)
+                                    @Html.CheckBox("Investigation.SceneSecured", Model.Investigation.SceneSecured ?? false, new { @class = "form-control js-switch" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.Investigation.OtherInvestigations)
+                                    @Html.TextAreaFor(m => m.Investigation.OtherInvestigations, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.OtherInvestigations, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(m => m.Investigation.SequenceOfEvents)
+                                    @Html.TextAreaFor(m => m.Investigation.SequenceOfEvents, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.SequenceOfEvents, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.ProcessEnvironmentId)
+                                    @Html.ListBoxFor(model => model.Investigation.ProcessEnvironmentId, new MultiSelectList(Model.ProcessEnvironmentList, "Value", "Text", Model.Investigation.ProcessEnvironmentId), new { @class = "form-control", @multiple = "multiple" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.ProcessEnvironmentId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.RootCausesId)
+                                    @Html.ListBoxFor(model => model.Investigation.RootCausesId, new MultiSelectList(Model.RootCauseList, "Value", "Text", Model.Investigation.RootCausesId), new { @class = "form-control", @multiple = "multiple" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.RootCausesId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="x_content">
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.PersonnelId)
+                                    @Html.ListBoxFor(model => model.Investigation.PersonnelId, new MultiSelectList(Model.PersonnelList, "Value", "Text", Model.Investigation.PersonnelId), new { @class = "form-control", @multiple = "multiple" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.PersonnelId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="col-md-6">
+                                    @Html.LabelFor(m => m.Investigation.CorrectiveMeasureId)
+                                    @Html.ListBoxFor(model => model.Investigation.CorrectiveMeasureId, new MultiSelectList(Model.CorrectiveMeasureList, "Value", "Text", Model.Investigation.CorrectiveMeasureId), new { @class = "form-control", @multiple = "multiple" })
+                                    @Html.ValidationMessageFor(m => m.Investigation.CorrectiveMeasureId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_content">
+                    <div class="col-md-10 right">
+                        <input type="submit" name="submit" value="Save" class="btn btn-primary" />
+                        <input type="submit" name="submit" value="Submit" class="btn btn-success" />                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /page content -->
+}
+
+<div class="modal fade bs-example-modal-lg upload" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" id="uploadModalContent">
+
+    </div>
+</div>

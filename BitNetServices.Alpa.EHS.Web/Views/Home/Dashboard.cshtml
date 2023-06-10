@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+
+
+@inject IViewLocalizer Localizer
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor
+@{
+    Layout = "_HomeLayout";
+}
+
+<div class="clearfix"></div>
+
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <h1>Welcome</h1>
+        <h2>
+            Alpa - Safety, Health, and Environment Management System (A-SHEMS) offers a complete and personalised occupational, health, risk and safety management solutions in a single cloud based software.
+        </h2>
+        @if (_httpContextAccessor.HttpContext.Request.Query.Keys.Contains("reason")
+               && _httpContextAccessor.HttpContext.Request.Query["reason"].ToString().ToLower() == "timeout")
+        {
+            <p class="danger">
+                Your last session was timedout due to long inactivity. Please sign-in again.
+            </p>
+        }
+        <div class="navbar-right">
+            <a class="btn btn-success" href="/auth/signin">Sign In</a>
+        </div>
+    </div>
+</div>
+<!-- /page content -->

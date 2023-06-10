@@ -1,0 +1,189 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.EmployeeViewModel
+
+@if (this.Layout != null)
+{
+    ViewBag.IsModal = false;
+    this.Layout = "_MasterLayout";
+}
+<div class="clearfix"></div>
+@using (Html.BeginForm("Employee", "Master", FormMethod.Post))
+{
+    <p class="text-danger">
+        @ViewBag.ErrorMessage
+    </p>
+    if (ViewBag.IsModal == null || ViewBag.IsModal == true)
+    {
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Employee</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 ">
+                            @Html.HiddenFor(m => m.EmployeeId)
+                            @Html.HiddenFor(m => m.CreatedBy)
+                            @Html.HiddenFor(m => m.CreatedOn)
+                            @Html.LabelFor(m => m.Name)
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", requried = "required" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-6 col-sm-6 ">
+                            @Html.LabelFor(m => m.Designation)
+                            @Html.TextBoxFor(m => m.Designation, new { @class = "form-control", requried = "required" })
+                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 ">
+                            @Html.LabelFor(m => m.Email)
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", requried = "required" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-6 col-sm-6 ">
+                            @Html.LabelFor(m => m.DateofJoining)
+                            @Html.TextBoxFor(m => m.DateofJoining, new { @class = "form-control", requried = "required" })
+                            @Html.ValidationMessageFor(m => m.DateofJoining, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 ">
+                            @Html.LabelFor(m => m.Manager)
+                            @Html.TextBoxFor(m => m.Manager, new { @class = "form-control", requried = "required" })
+                            @Html.ValidationMessageFor(m => m.Manager, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            @Html.LabelFor(m => m.DepartmentId)
+                            @Html.DropDownListFor(model => model.DepartmentId, Model.DepartmentList, "--Select--", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 ">
+                            @Html.LabelFor(m => m.EmployeeTypeId)
+                            @Html.DropDownListFor(model => model.EmployeeTypeId, Model.EmploymentTypeList, "--Select--", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.EmployeeTypeId, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            Associate User <input type="checkbox" class="js-switch" id="associateUser" checked />
+                            @Html.LabelFor(m => m.UserId)
+                            @Html.DropDownListFor(model => model.UserId, Model.UserList, "--Select--", new { @class = "form-control", @required = "" })
+                            @Html.ValidationMessageFor(m => m.UserId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" name="close" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Employee</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li>
+                                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12 ">
+                                <div class="x_panel">
+                                    <div class="x_content">
+                                        <div class="col-md-6 col-sm-6">
+                                            @Html.HiddenFor(m => m.EmployeeId)
+                                            @Html.HiddenFor(m => m.CreatedBy)
+                                            @Html.HiddenFor(m => m.CreatedOn)
+                                            @Html.LabelFor(m => m.Name)
+                                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 ">
+                                            @Html.LabelFor(m => m.Designation)
+                                            @Html.TextBoxFor(m => m.Designation, new { @class = "form-control", requried = "required" })
+                                            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="col-md-6 col-sm-6">
+                                            @Html.LabelFor(m => m.Email)
+                                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", requried = "required" })
+                                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-md-6 col-sm-6 ">
+                                            @Html.LabelFor(m => m.DateofJoining)
+                                            @Html.TextBoxFor(m => m.DateofJoining, new { @class = "form-control", requried = "required" })
+                                            @Html.ValidationMessageFor(m => m.DateofJoining, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="col-md-6 col-sm-6">
+                                            @Html.LabelFor(m => m.Manager)
+                                            @Html.TextBoxFor(m => m.Manager, new { @class = "form-control", requried = "required" })
+                                            @Html.ValidationMessageFor(m => m.Manager, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-md-6">
+                                            @Html.LabelFor(m => m.DepartmentId)
+                                            @Html.DropDownListFor(model => model.DepartmentId, Model.DepartmentList, "--Select--", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.DepartmentId, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="x_content">
+                                        <div class="col-md-6 col-sm-6 ">
+                                            @Html.LabelFor(m => m.EmployeeTypeId)
+                                            @Html.DropDownListFor(model => model.EmployeeTypeId, Model.EmploymentTypeList, "--Select--", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.EmployeeTypeId, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            Associate User <input type="checkbox" class="js-switch" id="associateUser" checked />
+                                            @Html.LabelFor(m => m.UserId)
+                                            @Html.DropDownListFor(model => model.UserId, Model.UserList, "--Select--", new { @class = "form-control", @required = "" })
+                                            @Html.ValidationMessageFor(m => m.UserId, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 ">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <div class="col-md-10 right">
+                            <button type="button" name="close" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+}
+
+

@@ -1,0 +1,1157 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using BitNetServices.Alpa.EHS.Common.Model.Catalog
+
+@inject IViewLocalizer Localizer
+
+@{
+    var users = Context.Session.GetObjectFromJson<List<UserModel>>("SessionUsers");
+    UserModel user = null;
+    if (users != null && users.Count() > 0)
+    {
+        var urlPath = Context.Request.Path.Value;
+        string[] urlPieces = urlPath.Split(new[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+        if (urlPieces.Length > 0)
+        {
+            var tenantName = urlPieces[0];
+
+            var usersList = users.Where(a => a.TenantUrlPiece == tenantName);
+            if (usersList != null && usersList.Count() > 0)
+            {
+                user = usersList.Last();
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Localizer["Alpa EHS Hub"]</title>
+    <!-- Bootstrap -->
+    <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="~/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="~/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <!-- bootstrap-wysiwyg -->
+    <link href="~/vendors/google-code-prettify/src/prettify.css" rel="stylesheet">
+    <!-- Select2 -->
+    <link href="~/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
+    <!-- Switchery -->
+    <link href="~/vendors/switchery/dist/switchery.min.css" rel="stylesheet">
+    <!-- starrr -->
+    <link href="~/vendors/starrr/dist/starrr.css" rel="stylesheet">
+    <!-- bootstrap-daterangepicker -->
+    <!-- Custom Theme Style -->
+    <link href="~/css/custom.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="~/vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="~/vendors/iCheck/skins/flat/green.css" rel="stylesheet">
+    <link href="cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
+
+    <link rel="stylesheet" href="~/vendors/jquery-timepicker/jquery-ui-timepicker-addon.css">
+
+</head>
+
+<body>
+    <div class="nav-md">
+        <div class="container body">
+            <div class="main_container">
+                <div class="col-md-3 left_col">
+                    <div class="left_col scroll-view">
+                        <div class="navbar nav_title" style="border: 0;">
+                            <a href="index.html" class="site_title"><img src="~/images/logo.png" width="72" height="72" /> <span>A-SHEMS</span></a>
+                        </div>
+
+                        <div class="clearfix"></div>
+
+                        <br />
+
+                        <!-- sidebar menu -->
+                        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                            <div class="menu_section">
+                                <h3>General</h3>
+                                <ul class="nav side-menu">
+                                    <li>
+                                        <a href=@Url.Action("Index", "Dashboard")><i class="fa fa-pie-chart"></i> Dashboard</a>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-newspaper-o"></i>1 HSE Proactive Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>1.1.HSE Knowledge Base Folder</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>1.2.HSE Violation & Disciplinary Action Tracking</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>1.3.HSE Inspections Checklists</a>
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-puzzle-piece"></i>2 Risk Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li>
+                                                <a>2.1 Hazard and Incident<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("Index", "HazardIncidents")>2.1.0 All Hazard/Incidents</a>
+                                                    </li>
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("Create", "HazardIncidents")>2.1.1 Hazard/Incident/Nearmiss Reporting</a>
+                                                    </li>
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("Investigation", "HazardIncidents")>2.2.2 Hazard/Incident/Nearmiss Investigation</a>
+                                                    </li>
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("Index", "Files", new { folder = "jsa"})>2.1.3 JSA Folder</a>
+                                                    </li>
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("Index", "Files", new { folder = "hira"})>2.1.4 HIRA Folder</a>
+                                                    </li>
+
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <a>2.2 Personal Protective Equipment<span class="fa fa-chevron-down"></span></a>
+                                                <ul class="nav child_menu">
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("ComingSoon", "Dashboard")>2.2.1 PPE Matrix</a>
+                                                    </li>
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("ComingSoon", "Dashboard")>2.2.2.PPE Issue Tracking</a>
+                                                    </li>
+                                                    <li class="sub_menu">
+                                                        <a href=@Url.Action("ComingSoon", "Dashboard")>2.2.3.PPE Inentory</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-medkit"></i>3.Emergency Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>3.1.Fire Safety Equipment Monitoring</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>3.2.First Aid/OHC Management</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>3.3.Employee & Visitor Management</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>3.4.Emergency Response Team & Procedure</a>
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-bookmark-o"></i>4.Training & Awareness Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>4.1.Training Matrix</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>4.2.Training Register</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>4.3.HSE Meeting MoM</a>
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-file-word-o"></i>5.Reporting/Record Keeping<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>5.1.KPI & Dashboard</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>5.2.Monthly HSE Statistics</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-flask"></i>6.Chemical/SDS Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>6.1.Chemical Inventory</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>6.2.SDS Management</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-car"></i>7.Vehicle Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>7.1.List of Approved Vehicles</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>7.1.List of Approved Vehicles</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>7.3.List of Approved Drivers</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-user"></i>8.Contractor Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>8.1.Contractor HSE Evaluation</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>8.2.Contractor & Worker List</a>
+                                            </li>
+
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-tags"></i>9.LOTO Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>9.1.List of Authorized Persons</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>9.2.Machine Specific LOTO Procedure</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>9.3.LOTO Register</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-object-group"></i>10.Scaffolding Management<span class="fa fa-chevron-down"></span></a>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-leaf"></i>11.Environmental Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>11.1.Water Balancing</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>11.2.Emission Monitoring</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>11.3.Energy Management</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-legal"></i>12.Legal & ISO Compliance<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>12.1.Doc Repository</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>12.2.Legal Register</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-industry"></i>13.Industrial Hygiene<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>13.1.Hazardous Area Monitoring</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>13.2.Workplace Air Monitoring</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-circle-o-notch"></i>14.Waste Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>14.1.Scrap Yard Management</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("ComingSoon", "Dashboard")>14.2.Waste Disposal Record</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a><i class="fa fa-circle-o-notch"></i>15.PTW Management<span class="fa fa-chevron-down"></span></a>
+                                        <ul class="nav child_menu">
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("Index", "WorkPermit")>15.1.Work Permits</a>
+                                            </li>
+                                            <li class="sub_menu">
+                                                <a href=@Url.Action("Create", "WorkPermit")>15.2.New Work Permit</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- /sidebar menu -->
+                        <!-- /menu footer buttons -->
+                        @if (user != null)
+                        {
+                            <div class="sidebar-footer hidden-small">
+                                <a data-toggle="tooltip" data-placement="top" title="Configurations" href="@( user.SecurityRole.Name == "Admin" ? Url.Action("Index", "Master") : "#")">
+                                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                                </a>
+                                <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+                                    <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+                                </a>
+                                <a data-toggle="tooltip" data-placement="top" title="Lock">
+                                    <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+                                </a>
+                                <a data-toggle="tooltip" data-placement="top" title="Logout" href="@Url.Action("LogOut", "Account", new { email = user.Email, tenant = user.TenantName})">
+                                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                                </a>
+                            </div>
+                        }
+                        <!-- /menu footer buttons -->
+                    </div>
+                </div>
+
+                <!-- ------------------------------------------------------------------------------------------------------------------- -->
+                <!-- Account Panel -->
+                <!-- ------------------------------------------------------------------------------------------------------------------- -->
+
+                @Html.Partial("_Account")
+
+                <!-- page content -->
+                <div class="right_col" role="main">
+                    <div class="">
+                        @RenderBody()
+                    </div>
+                </div>
+                <!-- /page content -->
+                <!-- footer content -->
+                <footer class="footer_fixed">
+                    <div class="pull-left">
+                        @(user == null ? "" : "Department : " + user.Employee?.Department?.Name)
+                    </div>
+                    <div class="pull-right">
+                        A-SHEMS by <a href="https://alpagroups.com">Alpa Groups</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </footer>
+                <!-- /footer content -->
+            </div>
+
+            <script src="~/vendors/jquery/dist/jquery.min.js"></script>
+            <!-- Bootstrap -->
+            <script src="~/vendors/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- FastClick -->
+            <script src="~/vendors/fastclick/lib/fastclick.js"></script>
+            <!-- NProgress -->
+            <script src="~/vendors/nprogress/nprogress.js"></script>
+            <!-- bootstrap-progressbar -->
+            <script src="~/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+            <!-- iCheck -->
+            <script src="~/vendors/iCheck/icheck.min.js"></script>
+            <!-- bootstrap-daterangepicker -->
+            <script src="~/vendors/moment/min/moment.min.js"></script>
+            <script src="~/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+            <!-- bootstrap-wysiwyg -->
+            <script src="~/vendors/bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js"></script>
+            <script src="~/vendors/jquery.hotkeys/jquery.hotkeys.js"></script>
+            <script src="~/vendors/google-code-prettify/src/prettify.js"></script>
+            <!-- jQuery Tags Input -->
+            <script src="~/vendors/jquery.tagsinput/src/jquery.tagsinput.js"></script>
+            <!-- Switchery -->
+            <script src="~/vendors/switchery/dist/switchery.min.js"></script>
+            <!-- Select2 -->
+            <script src="~/vendors/select2/dist/js/select2.full.min.js"></script>
+            <!-- Parsley -->
+            <script src="~/vendors/parsleyjs/dist/parsley.min.js"></script>
+            <!-- Autosize -->
+            <script src="~/vendors/autosize/dist/autosize.min.js"></script>
+            <!-- starrr -->
+            <script src="~/vendors/starrr/dist/starrr.js"></script>
+            <!-- Custom Theme Scripts -->
+            <script src="~/js/custom.js"></script>
+            <script src="~/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+            <!-- FastClick -->
+            <script src="~/vendors/fastclick/lib/fastclick.js"></script>
+            <!-- NProgress -->
+            <script src="~/vendors/nprogress/nprogress.js"></script>
+            <!-- jQuery Smart Wizard -->
+            <script src="~/vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js"></script>
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.16.0/jquery.validate.min.js"></script>
+            <script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.6/jquery.validate.unobtrusive.min.js"></script>
+            <!-- FastClick -->
+            <script src="~/vendors/fastclick/lib/fastclick.js"></script>
+            <!-- NProgress -->
+            <script src="~/vendors/nprogress/nprogress.js"></script>
+            <!-- iCheck -->
+            <script src="~/vendors/iCheck/icheck.min.js"></script>
+            <!-- Datatables -->
+            <script src="~/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+            <script src="~/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+            <script src="~/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+            <script src="~/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+            <script src="~/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+            <script src="~/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+            <script src="~/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+            <script src="~/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+            <script src="~/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+            <script src="~/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+            <script src="~/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+            <script src="~/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+            <script src="~/vendors/datatable.net-editor/js/datatabales.editor.min.js"></script>
+            <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js"></script>
+            <script src="~/vendors/jszip/dist/jszip.min.js"></script>
+            <script src="~/vendors/pdfmake/build/pdfmake.min.js"></script>
+            <script src="~/vendors/pdfmake/build/vfs_fonts.js"></script>
+            <script src="~/js/webcam.js"></script>
+            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+
+
+            <!-- Chart.js -->
+            <script src="~/vendors/Chart.js/dist/Chart.min.js"></script>
+
+            <script src="~/vendors/jquery-timepicker/jquery-ui-timepicker-addon.js"></script>
+
+            @Html.Raw(TempData["msg"])
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('*[id*=hazard-incident]').each(function () {
+            $(this).hide();
+        });
+
+         $('*[id*=hazard-assign-incident]').each(function () {
+            $(this).hide();
+         });
+
+         $('*[id*=hazard-update-incident]').each(function () {
+            $(this).hide();
+         });
+
+        
+        $('*[id*=work-permit]').each(function () {
+            $('hide')
+            $(this).hide();
+        });
+
+         //Work Permit Issue
+        if ($("#WorkPermitType_Name").length) {
+            var workPermitType = $("#WorkPermitType_Name").val().toLowerCase().replace(/\s/g, '-');            
+            if (workPermitType != null && workPermitType != '') {
+                $('*[id*=' + workPermitType + ']').each(function () {
+                    console.log('show');
+                    $(this).show();
+                });
+            }
+        }
+
+
+        //Hazard Incident Assign
+        if ($("#CategoryOfHazard_Name").length) {
+            var categoryOfHazardValue = $("#CategoryOfHazard_Name").val().toLowerCase().replace(/\s/g, '-');
+            if (categoryOfHazardValue != null && categoryOfHazardValue != '') {
+                $('*[id*=' + categoryOfHazardValue + ']').each(function () {
+                    $(this).show();
+                });
+            }
+        }
+
+       
+
+        //Hazard Incident Update
+        categoryOfHazardValue = $("#CategoryOfHazardId option:selected").text().toLowerCase().replace(/\s/g, '-');
+        if (categoryOfHazardValue != null && categoryOfHazardValue != '') {
+                $('*[id*=' + categoryOfHazardValue + ']').each(function () {
+                    $(this).show();
+                });
+        }
+
+        $('#TaskBeingCarriedOutOtherDescription').hide();
+        $('#IncidentFuturePreventionOtherDescription').hide();
+        $('#HazardTypeOtherDescription').hide();
+        $('#IncidentInjuryTypeOtherDescription').hide();
+
+
+        $('#ReasonForDelay, #DateOfCompletion, #IncidentReasonForDelay, #IncidentDateOfCompletion').hide();
+        $('label[for="ReasonForDelay"], label[for="DateOfCompletion"], label[for="IncidentReasonForDelay"], label[for="IncidentDateOfCompletion"]').hide()
+
+        $('#InjuredContractorId, #InjuredEmployeeId, #InjuredEmployee, #InjuredIntern, #InjuredEmployeeDesignation, #InjuredEmployeeManager').hide();
+        $('label[for="InjuredContractorId"], label[for="InjuredEmployeeId"], label[for="InjuredIntern"], label[for="InjuredEmployeeDesignation"], label[for="InjuredEmployeeManager"]').hide()
+
+
+        $('label[for="HazardTypeOtherDescription"]').hide(); $('#HazardTypeOtherDescription').hide();
+        $('#IncidentHazardTypeOtherDescription').hide(); $('label[for="IncidentHazardTypeOtherDescription"]').hide();
+        $('#TaskBeingCarriedOutOtherDescription').hide(); $('label[for="TaskBeingCarriedOutOtherDescription"]').hide();
+        $('#IncidentFuturePreventionOtherDescription').hide(); $('label[for="IncidentFuturePreventionOtherDescription"]').hide();
+        $('#IncidentInjuryTypeOtherDescription').hide(); $('label[for="IncidentInjuryTypeOtherDescription"]').hide();
+
+
+        $('#CategoryOfHazardId').change(function () {
+            var categoryOfHazardValue = $("#CategoryOfHazardId option:selected").text().toLowerCase().replace(/\s/g, '-');
+            $('*[id*=hazard-incident]').each(function () {
+                $(this).hide();
+            });
+            if (categoryOfHazardValue != null && categoryOfHazardValue != '') {
+                $('*[id*=' + categoryOfHazardValue + ']').each(function () {
+                    $(this).show();
+                });
+            }
+        }).trigger('change');
+
+
+
+        $('#WorkPermitTypeId').change(function () {
+            var categoryOfHazardValue = $("#WorkPermitTypeId option:selected").text().toLowerCase().replace(/\s/g, '-');
+            $('*[id*=work-permit]').each(function () {
+                $(this).hide();
+            });
+            if (categoryOfHazardValue != null && categoryOfHazardValue != '') {
+                $('*[id*=' + categoryOfHazardValue + ']').each(function () {
+                    $(this).show();
+                });
+            }
+        }).trigger('change');
+
+        var departmentId = null;
+        var id = $("#EmployeeAssigned").attr('data-dependency');
+        $("#EmployeeAssigned, #IncidentEmployeeAssigned").keyup(function(e){
+            if (id != undefined || id != null) {
+                departmentId = id;
+            }
+            else {
+                departmentId = null;
+            }
+        });
+
+        $("#ReportedBy, #EmployeeAssigned, #InjuredEmployee, #IncidentEmployeeAssigned").autocomplete({
+
+            
+            source: function (request, response) {
+                console.log(request);
+
+                $.ajax({
+                    url: '@Url.Action("Employee", "LookupApi")',
+                    type: "GET",
+                    dataType: "json",
+                    data: { term: request.term, departmentId :  departmentId },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.name, id: item.employeeId, manager: item.manager, designation: item.designation }
+                        }));
+                    },
+                });
+            },
+            delay: 0,
+            minLength: 3,
+            matchContains: "word",
+            autoFill: true,
+            messages: {
+                noResults: "",
+                results: function (resultsCount) { }
+            },
+            select: function (a, b) {
+                var employee = $(this);
+                var data = b.item;
+
+                if ($("#ReportedBy").is(employee)) {
+                    var designation = $("#EmployeeDesignation");
+                    var manager = $("#EmployeeManager");
+                    var employeeid = $("#EmployeeId");
+
+                    employeeid.val(data.id);
+                    manager.val(data.manager);
+                    designation.val(data.designation);
+                }
+                if ($("#EmployeeAssigned").is(employee)) {
+                    var assignedDesignation = $("#EmployeeAssignedDesignation");
+                    var employeeid = $("#EmployeeAssignedId");
+
+                    employeeid.val(data.id);
+                    assignedDesignation.val(data.designation);
+                }
+
+                if ($("#InjuredEmployee").is(employee)) {
+                    var injuredEmployeeDesignation = $("#InjuredEmployeeDesignation");
+                    var injuredEmployeeManager = $("#InjuredEmployeeManager");
+                     var employeeid = $("#InjuredEmployeeId");
+
+                    employeeid.val(data.id);
+                    injuredEmployeeDesignation.val(data.designation);
+                    injuredEmployeeManager.val(data.manager);
+                }
+
+                if ($("#IncidentEmployeeAssigned").is(employee)) {
+                    var incidentEmployeeAssignedDesignation = $("#IncidentEmployeeAssignedDesignation");
+                    var employeeid = $("#IncidentEmployeeAssignedId");
+
+                    employeeid.val(data.id);
+                    incidentEmployeeAssignedDesignation.val(data.designation);
+                }
+            }
+        });
+
+        $('#StatusOfHazardId, #IncidentStatusOfHazardId').change(function () {
+            if ($('#StatusOfHazardId').length || $('#IncidentStatusOfHazardId').length) {
+                var statusOfHazardId = $('option:selected', this).text();
+                toggleStatusOfHazard(statusOfHazardId);
+            }
+        }).trigger('change');
+
+
+
+
+        $('#LocationOfHazardId').change(function () {
+            var hazardLocationId = $("#LocationOfHazardId").val();
+            var areaOrBuildingSelect = $("#AreaOrBuildingId");
+
+            areaOrBuildingSelect.empty();
+            if (hazardLocationId != null && hazardLocationId != '') {
+                $.getJSON('@Url.Action("AreaOrBuilding", "LookupApi")', { locationId: hazardLocationId }, function (areaOrBuildings) {
+                    if (areaOrBuildings != null && !jQuery.isEmptyObject(areaOrBuildings)) {
+                        areaOrBuildingSelect.append($('<option/>', {
+                            value: null,
+                            text: "-- Select --"
+                        }));
+                        $.each(areaOrBuildings, function (i, areaOrBuilding) {
+                            areaOrBuildingSelect.append($('<option/>', {
+                                value: areaOrBuilding.areaOrBuildingId,
+                                text: areaOrBuilding.name
+                            }));
+                        });
+                    };
+                });
+            }
+        });
+
+
+        $('#LocationId').change(function () {
+            var hazardLocationId = $("#LocationId").val();
+            var areaOrBuildingSelect = $("#AreaOrBuildingId");
+
+            areaOrBuildingSelect.empty();
+            if (hazardLocationId != null && hazardLocationId != '') {
+                $.getJSON('@Url.Action("AreaOrBuilding", "LookupApi")', { locationId: hazardLocationId }, function (areaOrBuildings) {
+                    if (areaOrBuildings != null && !jQuery.isEmptyObject(areaOrBuildings)) {
+                        areaOrBuildingSelect.append($('<option/>', {
+                            value: null,
+                            text: "-- Select --"
+                        }));
+                        $.each(areaOrBuildings, function (i, areaOrBuilding) {
+                            areaOrBuildingSelect.append($('<option/>', {
+                                value: areaOrBuilding.areaOrBuildingId,
+                                text: areaOrBuilding.name
+                            }));
+                        });
+                    };
+                });
+            }
+        });
+
+        $('#LocationOfIncidentId').change(function () {
+            var hazardLocationId = $("#LocationOfIncidentId").val();
+            var areaOrBuildingSelect = $("#AreaOrBuildingIncidentId");
+
+            areaOrBuildingSelect.empty();
+            if (hazardLocationId != null && hazardLocationId != '') {
+                $.getJSON('@Url.Action("AreaOrBuilding", "LookupApi")', { locationId: hazardLocationId }, function (areaOrBuildings) {
+                    if (areaOrBuildings != null && !jQuery.isEmptyObject(areaOrBuildings)) {
+                        areaOrBuildingSelect.append($('<option/>', {
+                            value: null,
+                            text: ""
+                        }));
+
+                        $.each(areaOrBuildings, function (i, areaOrBuilding) {
+                            areaOrBuildingSelect.append($('<option/>', {
+                                value: areaOrBuilding.areaOrBuildingId,
+                                text: areaOrBuilding.name
+                            }));
+                        });
+                    };
+                });
+            }
+        });
+
+        $('#TenantId').change(function () {
+            var tenantId = $("#TenantId").val();
+            var deparmentSelect = $("#DepartmentId");
+            console.log(deparmentSelect)
+            deparmentSelect.empty();
+            if (tenantId != null && tenantId != '') {
+                $.getJSON('@Url.Action("Departments", "LookupApi")', { tenantId: tenantId }, function (departments) {
+                    if (departments != null && !jQuery.isEmptyObject(departments)) {
+                        deparmentSelect.append($('<option/>', {
+                            value: null,
+                            text: "-- Select --"
+                        }));
+                        $.each(departments, function (i, department) {
+                            deparmentSelect.append($('<option/>', {
+                                value: department.departmentId,
+                                text: department.name
+                            }));
+                        });
+                    };
+                });
+            }
+        }).trigger('change');
+
+
+        $('#InjuredPersonCategoryId').change(function () {
+            if ($("#InjuredPersonCategory_Name").length) {
+                return;
+            }
+            console.log('person category');
+            toggleInjuredPersonCategory($("#InjuredPersonCategoryId  option:selected").text());
+        }).trigger('change');
+
+        $('#IncidentTaskCarriedId').change(function () {
+            var text = $("#IncidentTaskCarriedId option:selected").text().trim().toLowerCase().replace(/\s/g, '-');
+            toggleTaskBeingCarriedOut(text);
+        }).trigger('change');
+
+        $('#IncidentFuturePreventionId').change(function () {
+            var text = $("#IncidentFuturePreventionId option:selected").text().trim().toLowerCase().replace(/\s/g, '-');
+            toggleIncidentFuturePrevention(text);
+        }).trigger('change');
+
+        $('#IncidentInjuryTypeId').change(function () {
+            var text = $("#IncidentInjuryTypeId option:selected").text().trim().toLowerCase().replace(/\s/g, '-');
+            toggleIncidentInjuryType(text);
+        }).trigger('change');
+
+        $('#TypeOfHazardId, #IncidentTypeOfHazardId').change(function () {
+            if ($('#TypeOfHazard_Name').length || $('#IncidentTypeOfHazard_Name').length) {
+                return;
+            }
+            var text = $('option:selected', this).text().toLowerCase().trim().replace(/\s/g, '-');
+            toggleTypeOfHazard(text, $(this));
+        }).trigger('change');
+
+
+        function toggleInjuredPersonCategory(injuredPersonCategoryId) {
+            if (injuredPersonCategoryId == '') { return;}
+
+            var injuredContractorId = $("#InjuredContractor_Name").length ?  $("#InjuredContractor_Name") : $("#InjuredContractorId");
+            var injuredEmployeeId = $("#InjuredEmployee_Name").length ? $("#InjuredEmployee_Name") :  $("#InjuredEmployeeId") ;
+            var injuredIntern = $("#InjuredIntern");
+            var injuredEmployeeDesignation = $("#InjuredEmployeeDesignation");
+            var injuredEmployeeManager = $("#InjuredEmployeeManager");
+            var injuredEmployee = $("#InjuredEmployee");
+
+            if (injuredPersonCategoryId != null && injuredPersonCategoryId != '') {
+                if (injuredPersonCategoryId.toLowerCase().indexOf("employee") >= 0) {
+                    injuredEmployeeDesignation.show(); injuredEmployeeManager.show(); injuredEmployeeId.show(); injuredContractorId.hide(); injuredIntern.hide();
+                    injuredEmployee.show();
+                    $('label[for="InjuredContractorId"]').hide();
+                    $('label[for="InjuredIntern"]').hide();
+                    $('label[for="InjuredEmployeeDesignation"]').show();
+                    $('label[for="InjuredEmployeeManager"]').show();
+                    $('label[for="InjuredEmployeeId"]').show();
+
+                }
+                if (injuredPersonCategoryId.toLowerCase().indexOf("intern") >= 0 || injuredPersonCategoryId.toLowerCase().indexOf("visitor") >= 0) {
+                    injuredEmployeeDesignation.hide(); injuredEmployeeManager.hide(); injuredEmployeeId.hide(); injuredContractorId.hide(); injuredIntern.show();
+                     injuredEmployee.hide();
+                    $('label[for="InjuredContractorId"]').hide();
+                    $('label[for="InjuredEmployeeId"]').hide();
+                    $('label[for="InjuredIntern"]').show();
+                    $('label[for="InjuredEmployeeDesignation"]').hide();
+                    $('label[for="InjuredEmployeeManager"]').hide();
+                }
+                if (injuredPersonCategoryId.toLowerCase().indexOf("contractor") >= 0) {
+                    console.log('contractor')
+                    injuredEmployeeDesignation.hide();
+                    injuredEmployeeManager.hide();
+                    injuredEmployeeId.hide();
+                    injuredContractorId.show();
+                    injuredIntern.hide();
+                    injuredEmployee.hide();
+
+                    $('label[for="InjuredContractorId"]').show();
+                    $('label[for="InjuredEmployeeId"]').hide();
+                    $('label[for="InjuredEmployeeDesignation"]').hide();
+                    $('label[for="InjuredEmployeeManager"]').hide();
+                    $('label[for="InjuredIntern"]').hide();
+
+                }
+            }
+        }
+
+        function toggleTaskBeingCarriedOut(text){
+            if (text != null && text != '' && text == 'others') {
+                 $('#TaskBeingCarriedOutOtherDescription').show();
+                  $('label[for="TaskBeingCarriedOutOtherDescription"]').show();
+             } else {
+                 $('#TaskBeingCarriedOutOtherDescription').hide();
+                  $('label[for="TaskBeingCarriedOutOtherDescription"]').hide();
+             }
+        }
+
+        function toggleIncidentFuturePrevention(text){
+            if (text != null && text != '' && text == 'others') {
+                $('#IncidentFuturePreventionOtherDescription').show();
+                $('label[for="IncidentFuturePreventionOtherDescription"]').show();
+            } else {
+                $('#IncidentFuturePreventionOtherDescription').hide();
+                $('label[for="IncidentFuturePreventionOtherDescription"]').hide();
+            }
+        }
+
+        function toggleIncidentInjuryType(text) {
+             if (text != null && text != '' && text == 'others') {
+                 $('#IncidentInjuryTypeOtherDescription').show();
+                 $('label[for="IncidentInjuryTypeOtherDescription"]').show();
+             } else {
+                 $('#IncidentInjuryTypeOtherDescription').hide();
+                 $('label[for="IncidentInjuryTypeOtherDescription"]').hide();
+             }
+        }
+
+        function toggleStatusOfHazard(statusOfHazardId) {
+             var reasonForDelay = $("#ReasonForDelay");
+            var dateOfCompletion = $("#DateOfCompletion");
+
+            var incidentReasonForDelay = $("#IncidentReasonForDelay");
+            var incidentDateOfCompletion = $("#IncidentDateOfCompletion");
+
+
+            if (statusOfHazardId != null && statusOfHazardId != '') {
+                if (statusOfHazardId.toLowerCase() == "completed") {
+                    incidentDateOfCompletion.show(); incidentReasonForDelay.hide(); $('label[for="IncidentReasonForDelay"]').hide(); $('label[for="IncidentDateOfCompletion"]').show();
+                    dateOfCompletion.show(); reasonForDelay.hide(); $('label[for="ReasonForDelay"]').hide(); $('label[for="DateOfCompletion"]').show();
+                }
+                if (statusOfHazardId.toLowerCase().indexOf("waiting") >= 0) {
+                    incidentDateOfCompletion.hide(); incidentReasonForDelay.show(); $('label[for="IncidentReasonForDelay"]').show(); $('label[for="IncidentDateOfCompletion"]').hide();
+                    dateOfCompletion.hide(); reasonForDelay.show(); $('label[for="ReasonForDelay"]').show(); $('label[for="DateOfCompletion"]').hide();
+                }
+            }
+        }
+
+        function toggleTypeOfHazard(text, o) {
+            if (text == '') { return;}
+            if (text == 'other') {
+                if ($('#TypeOfHazardId').is(o) || $('#TypeOfHazard_Name').length) {
+                    $('#HazardTypeOtherDescription').show();
+                    $('label[for="HazardTypeOtherDescription"]').show();
+                }
+                if ($('#IncidentTypeOfHazardId').is(o) || $('#IncidentTypeOfHazard_Name').length) {
+                    $('#IncidentHazardTypeOtherDescription').show();
+                    $('label[for="IncidentHazardTypeOtherDescription"]').show();
+
+                }
+            } else {
+                if ($('#TypeOfHazardId').is(o) || $('#TypeOfHazard_Name').length) {
+                    $('#HazardTypeOtherDescription').hide();
+                    $('label[for="HazardTypeOtherDescription"]').hide();
+                }
+                if ($('#IncidentTypeOfHazardId').is(o) || $('#IncidentTypeOfHazard_Name').length) {
+                    $('#IncidentHazardTypeOtherDescription').hide();
+                    $('label[for="IncidentHazardTypeOtherDescription"]').hide();
+                }
+            }
+        }
+
+        if ($("#IncidentTypeOfHazard_Name").length) {
+            toggleTypeOfHazard($("#IncidentTypeOfHazard_Name").val().toLowerCase().trim().replace(/\s/g, '-'));
+        }
+
+        if ($("#TypeOfHazard_Name").length) {
+            toggleTypeOfHazard($("#TypeOfHazard_Name").val().toLowerCase().trim().replace(/\s/g, '-'));
+        }
+
+        if ($("#InjuredPersonCategory_Name").length) {
+            toggleInjuredPersonCategory($("#InjuredPersonCategory_Name").val().toLowerCase().trim().replace(/\s/g, '-'));
+        }
+
+        if ($("#StatusOfHazard_Name").length) {
+            toggleStatusOfHazard($("#StatusOfHazard_Name").val());
+        }
+
+        if ($("#IncidentStatusOfHazard_Name").length) {
+            toggleStatusOfHazard($("#IncidentStatusOfHazard_Name").val());
+        }
+
+
+        $('#ReportingDate').datepicker({
+            maxDate: 0,
+            dateFormat: 'dd/MM/yy',
+        });
+
+        $('#StartDate').datepicker({
+            maxDate: 0,
+            dateFormat: 'dd/MM/yy',
+        });
+
+        $('#EndDate').datepicker({
+            maxDate: 0,
+            dateFormat: 'dd/MM/yy',
+       });
+
+        $('#DateofJoining').datepicker({
+            maxDate: 0,
+            dateFormat: 'dd/MM/yy',
+        });
+
+        $('#IncidentDate').timepicker({
+            maxDate: 0,
+            timeFormat: 'hh:mm tt',
+        });
+
+        $('#CompletionETA, #IncidentCompletionETA').datepicker({
+            minDate: 0,
+            dateFormat: 'dd/MM/yy',
+        });
+
+        $('#DateOfCompletion, #IncidentDateOfCompletion').datepicker({
+            maxDate: 0,
+           dateFormat: 'dd/MM/yy',
+            beforeShowDay: $.datepicker.noWeekend
+        });
+
+
+    });
+
+    $(".fileHazardCameraCapture, .fileIncidentCameraCapture, .fileHazardCompleteCameraCapture, .fileIncidentCompleteCameraCapture, .fileHazardIncidentUpload").click(function () {
+        var $buttonClicked = $(this);
+        var id = $buttonClicked.attr('data-id');
+        var routeUrl = $buttonClicked.attr('data-ctr');
+        var imageCtrl = $buttonClicked.attr('data-update-img');
+        var formCtrl = $buttonClicked.attr('data-update-ctr');
+        var showCamera = $buttonClicked.attr('data-show-camera');
+        var redirect = $buttonClicked.attr('data-redirect');
+        var fileTypeFilter = $buttonClicked.attr('data-filetype-filter');
+        var folder = $buttonClicked.attr('data-folder');
+        if (showCamera == undefined || showCamera == null) { showCamera = true; }
+        if (fileTypeFilter == undefined || fileTypeFilter == null) { fileTypeFilter = "image/*"; }
+        var options = { "backdrop": "static", keyboard: true };
+        $.ajax({
+            type: "GET",
+            url: routeUrl,
+            contentType: "application/json; charset=utf-8",
+            data: { "id": id, "formControl": formCtrl, "imageControl": imageCtrl, "showCamera": showCamera, "fileTypeFilter": fileTypeFilter, "redirect": redirect, "folder": folder },
+            datatype: "json",
+            success: function (data) {
+                $('#uploadModalContent').html(data);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(thrownError + "\r\n" + xhr.responseText);
+            }
+        });
+    });
+
+    $('#DepartmentName').change(function () {
+        var departmentNameValue = $("#DepartmentName option:selected").text();
+        console.log(departmentNameValue);
+        $('.fileHazardIncidentUpload').attr('data-folder', $('.fileHazardIncidentUpload').attr('data-base-folder') + '/' + departmentNameValue);
+    }).trigger('change');
+</script>
+
+
+<script>
+    $(function () {
+        $(".masterEdit").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.attr('data-id');
+            var routeUrl = $buttonClicked.attr('data-ctr');
+            var options = { "backdrop": "static", keyboard: true };
+            $.ajax({
+                type: "GET",
+                url: routeUrl,
+                contentType: "application/json; charset=utf-8",
+                data: { "id": id },
+                datatype: "json",
+                success: function (data) {
+                    $('#masterModalContent-' + routeUrl).html(data);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("Dynamic content load failed.");
+                }
+            });
+        });
+
+
+        $("a.delete-link").click(function () {
+            var deleteLink = $(this);
+            deleteLink.hide();
+            var confirmButton = deleteLink.siblings(".delete-confirm");
+            confirmButton.show();
+
+            var cancelDelete = function () {
+                removeEvents();
+                showDeleteLink();
+            };
+            var $buttonClicked = $(this);
+            var routeUrl = $buttonClicked.attr('data-ctr');
+            console.log(routeUrl);
+            var deleteItem = function () {
+                removeEvents();
+                confirmButton.hide();
+
+                $.post(
+                    routeUrl,
+                    AddAntiForgeryToken({ id: confirmButton.attr('data-delete-id') }))
+                    .done(function () {
+                        var parentRow = deleteLink.parents("tr:first");
+                        parentRow.fadeOut('fast', function () {
+                            parentRow.remove();
+                        });
+                    }).fail(function (data) {
+                        console.log(data);
+                    });
+                return false;
+            };
+
+            var removeEvents = function () {
+                confirmButton.off("click", deleteItem);
+                $(document).on("click", cancelDelete);
+                $(document).off("keypress", onKeyPress);
+            };
+
+            var showDeleteLink = function () {
+                confirmButton.hide();
+                deleteLink.show();
+            };
+
+            var onKeyPress = function (e) {
+                //Cancel if escape key pressed
+                if (e.which == 27) {
+                    cancelDelete();
+                }
+            };
+
+            confirmButton.on("click", deleteItem);
+            $(document).on("click", cancelDelete);
+            $(document).on("keypress", onKeyPress);
+
+            return false;
+        });
+        AddAntiForgeryToken = function (data) {
+            data.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+            return data;
+        };
+
+    });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#associateUser").change(function () {
+            $(this).is(":checked") ? $("#UserId").show() : $("#UserId").hide();
+        }).trigger('change');
+    });
+
+
+</script>
+
+
+
+<script type="text/javascript">
+    if ($('#chartHazardIncidentByStage').length) {
+        var result = JSON.parse($('#chartHazardIncidentByStage').attr('data-charts'))
+        var chartType = $('#chartHazardIncidentByStage').attr('data-chartype');
+
+        var values = [];
+        var labels = [];
+
+        $.each(result, function (i, obj) {
+            values.push(obj.data)
+        });
+        console.log(values);
+        $.each(result, function (i, obj) {
+            labels.push(obj.labels)
+        });
+
+        var ctx = $('#chartHazardIncidentByStage');
+        var data = {
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    "#455C73",
+                    "#9B59B6",
+                    "#BDC3C7",
+                    "#26B99A",
+                    "#3498DB"
+                ],
+                label: 'By Stage' // for legend
+            }],
+            labels: labels
+        };
+
+        var pieChart = new Chart(ctx, {
+            data: data,
+            type: 'pie',
+            otpions: {
+                legend: true
+            }
+        });
+    };
+
+    if ($('#chartHazardIncidentByType').length) {
+        var result = JSON.parse($('#chartHazardIncidentByType').attr('data-charts'))
+        var chartType = $('#chartHazardIncidentByType').attr('data-chartype');
+
+        var values = [];
+        var labels = [];
+
+        $.each(result, function (i, obj) {
+            values.push(obj.data)
+        });
+        console.log(values);
+        $.each(result, function (i, obj) {
+            labels.push(obj.labels)
+        });
+
+        var ctx = $('#chartHazardIncidentByType');
+        var data = {
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    "#455C73",
+                    "#9B59B6",
+                    "#BDC3C7",
+                    "#26B99A",
+                    "#3498DB"
+                ],
+                label: 'By Stage' // for legend
+            }],
+            labels: labels
+        };
+
+        var pieChart = new Chart(ctx, {
+            data: data,
+            type: 'pie',
+            otpions: {
+                legend: true
+            }
+        });
+    };
+
+
+
+</script>

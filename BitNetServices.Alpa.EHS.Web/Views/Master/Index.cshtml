@@ -1,0 +1,214 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.MasterViewModel
+
+@{
+    Layout = "_MasterLayout";
+}
+<!-- page content -->
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Master Configurations</h3>
+    </div>
+
+    <div class="title_right">
+        <div class="col-md-5 col-sm-5  form-group pull-right top_search">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Go!</button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 ">
+        <div class="x_panel">
+            <div class="x_content">
+
+                <ul class="nav nav-tabs bar_tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="employee-tab" data-toggle="tab" href="#employee" role="tab" aria-controls="employee" aria-selected="true">Employee</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="department-tab" data-toggle="tab" href="#department" role="tab" aria-controls="department" aria-selected="false">Department</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="location-tab" data-toggle="tab" href="#location" role="tab" aria-controls="location" aria-selected="false">Location</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="area-or-building-tab" data-toggle="tab" href="#area-or-building" role="tab" aria-controls="area-or-building" aria-selected="false">Area Or Building</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="hazard-category-tab" data-toggle="tab" href="#hazard-category" role="tab" aria-controls="hazard-category" aria-selected="false">Category of Hazard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="hazard-type-tab" data-toggle="tab" href="#hazard-type" role="tab" aria-controls="hazard-type" aria-selected="false">Type of Hazard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="user-tab" data-toggle="tab" href="#user" role="tab" aria-controls="user" aria-selected="false">Users</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade" id="hazard-category" role="tabpanel" aria-labelledby="hazard-category-tab">
+                        <div class="col-md-12 col-sm-12">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Category of Hazard</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        @*@Html.ActionLink("Create New", "CreateHazardCategory", "Master", null, new { @class = "btn" })*@
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_HazardCategoryList", Model.HazardCateogries)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="hazard-type" role="tabpanel" aria-labelledby="hazard-type-tab">
+                        <div class="col-md-12 col-sm-12  ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Hazard Types</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        @*@Html.ActionLink("Create New", "CreateHazardType", "Master", null, new { @class = "btn" })*@
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_HazardTypeList", Model.HazardTypes)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade show active" id="employee" role="tabpanel" aria-labelledby="employee-tab">
+                        <div class="col-md-12 col-sm-12  ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Employee</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        @Html.ActionLink("Create New", "CreateEmployee", "Master", null, new { @class = "btn" })
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_EmployeeList", Model.Employees)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="department" role="tabpanel" aria-labelledby="department-tab">
+                        <div class="col-md-12 col-sm-12  ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Deparments</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li>
+                                            @Html.ActionLink("Create New", "CreateDepartment", "Master", null, new { @class = "btn" })
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_DepartmentList", Model.Departments)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="location" role="tabpanel" aria-labelledby="location-tab">
+                        <div class="col-md-12 col-sm-12  ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Locations</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li>
+                                            @Html.ActionLink("Create New", "CreateLocation", "Master", null, new { @class = "btn" })
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_LocationList", Model.Locations)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="area-or-building" role="tabpanel" aria-labelledby="area-or-building-tab">
+                        <div class="col-md-12 col-sm-12  ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Area Or Buildings</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li>
+                                            @Html.ActionLink("Create New", "CreateAreaOrBuilding", "Master", null, new { @class = "btn" })
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_AreaOrBuildingList", Model.AreaOrBuildings)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="user" role="tabpanel" aria-labelledby="user-tab">
+                        <div class="col-md-12 col-sm-12  ">
+                            <div class="x_panel">
+                                <div class="x_title">
+                                    <h2>Users</h2>
+                                    <ul class="nav navbar-right panel_toolbox">
+                                        <li>
+                                            @if (@Context.Request.Path.Value.Contains("/alpagroup/"))
+                                            {
+                                                @Html.ActionLink("Create New", "CreateUser", "Master", null, new { @class = "btn" })
+                                            }
+                                        </li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="x_content">
+                                    <div class="table-responsive">
+                                        @await Html.PartialAsync("_UserList", Model.Users)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /page content -->

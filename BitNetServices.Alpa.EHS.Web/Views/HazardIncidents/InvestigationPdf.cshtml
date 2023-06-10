@@ -1,0 +1,556 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.HazardIncidentViewModel
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@Localizer["Alpa EHS Hub"]</title>
+    <!-- Bootstrap -->
+    <link href="~/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="~/vendors/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- bootstrap-wysiwyg -->
+    <link href="~/vendors/google-code-prettify/src/prettify.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="~/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        .breakhere {
+            page-break-before: always
+        }
+    </style>
+</head>
+
+<body style="background-color: transparent">
+    <div class="row">
+        <div class="col-sm-12 ">
+            <div class="card-box table-responsive">
+                <table class="table table-striped table-bordered" style="width:100%; " cellspacing="0" cellpadding="0">
+                    <tbody>
+                        <tr>
+                            <td colspan="6" align="right">
+                                <img src="~/images/logo.png" width="120" height="90" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="align-middle" align="center">
+                                <h1>Hazard and Incident Investigation Report</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="align-middle" align="center">
+                                Refer to EH&S Safety Instruction:
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%" cellspacing="1" cellpadding="1">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h3>Investigator's Information</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" align="right">
+                                <strong>Today's Date</strong>
+                            </td>
+                            <td>
+                                @DateTime.Now
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Name</strong>
+                            </td>
+                            <td>
+                                @Model.Investigation.Employee.Name
+                            </td>
+                            <td>
+                                <strong>Department</strong>
+                            </td>
+                            <td>
+                                @Model.Investigation.Employee.Department.Name
+                            </td>
+                            <td>
+                                <strong>Job Title</strong>
+                            </td>
+                            <td>
+                                @Model.Investigation.Employee.Designation
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">
+                                <strong>Comments</strong>
+                                <br />
+                                @Model.Investigation.OtherInvestigations
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h4>Secure the Scene</h4>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td colspan="5" align="right">
+                                <strong>Is the hazard sufficiently controlled to prevent further injury</strong>
+                            </td>
+                            <td>
+                                @(Model.Investigation.HazardSufficientlyControlled.HasValue ? Model.Investigation.HazardSufficientlyControlled.Value ? "Yes" : "No" : "N/A")
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" align="right">
+                                <strong>Was medical assistance provided to ensure the well-being of the affected employee?</strong>
+                            </td>
+                            <td>
+                                @(Model.Investigation.MedicalassistanceProvided.HasValue ? Model.Investigation.MedicalassistanceProvided.Value ? "Yes" : "No" : "N/A")
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" align="right">
+                                <strong>Is the scene secured to protect clues for analysis purposes?</strong>
+                            </td>
+                            <td>
+                                @(Model.Investigation.SceneSecured.HasValue ? Model.Investigation.SceneSecured.Value ? "Yes" : "No" : "N/A")
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="3">
+                                <h4>Collect the Facts</h4>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="33%">
+                                <strong>Affected Employee’s Name</strong>
+                                <br />
+                                @Model.InjuredContractor?.Name
+                                @Model.InjuredEmployee?.Name
+                                @Model.InjuredIntern
+                                @if (Model.InjuredContractor == null && Model.InjuredEmployee == null && string.IsNullOrEmpty(Model.InjuredIntern))
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                            <td width="33%">
+                                <strong>Work Area / Job Title</strong>
+                                <br />
+                                @Model.InjuredEmployeeDesignation
+                                @if (Model.InjuredEmployee == null)
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                            <td>
+                                <strong>Department</strong>
+                                <br />
+                                @Model.InjuredEmployee?.Department?.Name
+                                @if (Model.InjuredEmployee == null)
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Location</strong>
+                                <br />
+                                @Model.LocationOfIncident?.Name @Model.LocationOfHazard?.Name
+                            </td>
+                            <td>
+                                <strong>Building</strong>
+                                <br />
+                                @Model.AreaOrBuilding?.Name  @Model.AreaOrBuildingIncident?.Name
+                            </td>
+                            <td>
+                                <strong>Manager Name</strong>
+                                <br />
+                                @Model.InjuredEmployeeManager
+                                @if (Model.InjuredEmployee == null)
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Date of Incident</strong>
+                                <br />
+                                @Model.IncidentDate?.ToString("dd/MMM/yyyy")
+                            </td>
+                            <td>
+                                <strong>Time Of Incident</strong>
+                                <br />
+                                @Model.IncidentDate?.ToString("hh:MM")
+                            </td>
+                        </tr>
+                        <tr style="height: 175px">
+                            <td >
+                                <strong>Nature of the Injury</strong>
+                                <br />
+                                @(Model.IncidentInjuryTypes?.Count > 0 ? String.Join(", ", Model.IncidentInjuryTypes.Select(select => select.InjuryType.Name)) : "")
+                                @if (Model.IncidentInjuryTypes == null || Model.IncidentInjuryTypes?.Count == 0)
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                            <td >
+                                <strong class="text-wrap">Specific task being performed at time of incident:</strong>
+                                <br />
+                                @(Model.IncidentTaskCarrieds?.Count > 0 ? String.Join(", ", Model.IncidentTaskCarrieds.Select(select => select.TaskCarried.Name)) : "")
+                                @if (Model.IncidentTaskCarrieds == null || Model.IncidentTaskCarrieds?.Count == 0)
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                            <td>
+                                <strong>Body Parts Affected</strong>
+                                <br />
+                                @(Model.IncidentBodyParts?.Count > 0 ? String.Join(", ", Model.IncidentBodyParts.Select(select => select.BodyPart.Name)) : "")
+                                @if (Model.IncidentBodyParts == null || Model.IncidentBodyParts?.Count == 0)
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                        </tr>                             
+                        <tr>
+                            <td colspan="3">
+                                <strong>PPE being used:</strong>
+                                <br />
+                                <small>N/A</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3">
+                                <strong>Medical evaluation:</strong>
+                                <br />
+                                @Model.Investigation.MedicalEvalution?.Name
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <strong>Witness:</strong>
+                                <br />
+                                @(Model.NameOfWitness)
+                                @if (string.IsNullOrEmpty(Model.NameOfWitness))
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="height:150px">
+                                <strong>Statment of Witness:</strong>
+                                <br />
+                                @(Model.StatementOfWitness)
+                                @if (string.IsNullOrEmpty(Model.StatementOfWitness))
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <strong>Equipment / tools involved:</strong>
+                                <br />
+                                @Model.ToolsInvolved
+                                @if (string.IsNullOrEmpty(Model.ToolsInvolved))
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                            <td colspan="2">
+                                <strong>Materials / Chemicals handled</strong>
+                                <br />
+                                @Model.MachinesInvolved
+                                @if (string.IsNullOrEmpty(Model.MachinesInvolved))
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                            <td colspan="2">
+                                <strong>Vehicle Involved</strong>
+                                <br />
+                                @Model.VehicleInvolved
+                                @if (string.IsNullOrEmpty(Model.VehicleInvolved))
+                                {
+                                    <small>N/A</small>
+                                }
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h3>
+                                    Develop the Sequence of Events
+                                </h3>
+                                <span style="font-style:italic">Use this working space, as necessary, to determine the order of events and to construct an accurate timeline before, during, and after the incident</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="height:140px">
+                                @Model.Investigation.SequenceOfEvents
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h3>Potential Causal Factors</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h5>Process/ Environment-related:</h5>
+                            </td>
+                            <td colspan="5">
+                                @{
+                                    var text = Model.Investigation.ProcessEnvironment.Select(select => select.ProcessEnvironment?.Name);
+                                    if (text.Count() > 0)
+                                    {
+                                        foreach (var line in text)
+                                        {
+                                            <i class="fa fa-check-square-o"></i> @line
+                                        }
+                                    }
+                                    var except = Model.ProcessEnvironmentList.Select(select => select.Text).Except(text);
+                                    if (except.Count() > 0)
+                                    {
+                                        foreach (var line in except)
+                                        {
+                                            <i class="fa fa-square-o"></i> @line
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h5>Personnel-related:</h5>
+                            </td>
+                            <td colspan="5">
+                                @{
+                                    text = Model.Investigation.Personnel.Select(select => select.Personnel?.Name);
+                                    if (text.Count() > 0)
+                                    {
+                                        foreach (var line in text)
+                                        {
+                                            <i class="fa fa-check-square-o"></i> @line
+                                        }
+                                    }
+                                    except = Model.PersonnelList.Select(select => select.Text).Except(text);
+                                    if (except.Count() > 0)
+                                    {
+                                        foreach (var line in except)
+                                        {
+                                            <i class="fa fa-square-o"></i> @line
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h5>Possible Root Causes:</h5>
+                            </td>
+                            <td colspan="5">
+                                @{
+                                    text = Model.Investigation.RootCauses.Select(select => select.RootCause?.Name);
+                                    if (text.Count() > 0)
+                                    {
+                                        foreach (var line in text)
+                                        {
+                                            <i class="fa fa-check-square-o"></i> @line
+                                        }
+                                    }
+                                    except = Model.RootCauseList.Select(select => select.Text).Except(text);
+                                    if (except.Count() > 0)
+                                    {
+                                        foreach (var line in except)
+                                        {
+                                            <i class="fa fa-square-o"></i> @line
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h3>Corrective Measures:</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h5>Actions to take:</h5>
+                            </td>
+                            <td colspan="5">
+                                @{
+                                    text = Model.Investigation.CorrectiveMeasures.Select(select => select.CorrectiveMeasure?.Name);
+                                    if (text.Count() > 0)
+                                    {
+                                        foreach (var line in text)
+                                        {
+                                            <i class="fa fa-check-square-o"></i> @line <br />
+                                        }
+                                    }
+                                    except = Model.CorrectiveMeasureList.Select(select => select.Text).Except(text);
+                                    if (except.Count() > 0)
+                                    {
+                                        foreach (var line in except)
+                                        {
+                                            <i class="fa fa-square-o"></i> @line <br />
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h3>Follow-up Action(s):</h3>
+                                The Action Code is the number in parentheses (X) above.
+                                Upon completion of columns 1 – 4, send a copy of this report to the <strong>EH&S Occupational Safety Officer.</strong>
+                                As corrective measures are completed, record date and initial (columns 5 & 6) the original form for Supervisor record-keeping purposes.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tr>
+                        <td>
+                            Action Code #
+                        </td>
+                        <td>
+                            Description of Recommended Corrective Measures
+                        </td>
+                        <td>
+                            Who will implement?
+                        </td>
+                        <td>
+                            By When?
+                        </td>
+                        <td>
+                            Completed
+                        </td>
+                        <td>
+                            Supervisor Initials
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr rowspan="2">
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            _______________________________________
+                            <br />
+                            Supervisor’s Name
+                        </td>
+                        <td colspan="2">
+                            _______________________________________
+                            <br />
+                            Supervisor’s Signature
+                        </td>
+                        <td colspan="2">
+                            _______________________________________
+                            <br />
+                            Date
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-striped table-bordered" style="width:100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="6">
+                                <h3>Communicating Findings:</h3>
+                                A friendly reminder: Sharing the results from this accident investigation with peers & partners (i.e. similar departments and operational units, EH&S) can go a long way in the development of best practices and continuous improvement that can lead to a safer and more productive workplace for all.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29806.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{91D720A1-98D5-4237-BC38-F91CF8F9D621}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitNetServices.Alpa.EHS.Web", "src\BitNetServices.Alpa.EHS.Web\BitNetServices.Alpa.EHS.Web.csproj", "{482ABFC2-9CBA-4832-A0C7-503C53342F01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitNetServices.Alpa.EHS.Entities", "src\BitNetServices.Alpa.EHS.Entities\BitNetServices.Alpa.EHS.Entities.csproj", "{A8C26517-6521-4982-9C68-942FB4185C6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitNetServices.Alpa.EHS.Common", "src\BitNetServices.Alpa.EHS.Common\BitNetServices.Alpa.EHS.Common.csproj", "{668BF743-C085-4FA4-A037-80D58136BB35}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{34FB79A1-2C71-4903-B032-F57276A8B655}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entities", "Entities", "{4FCF4DA4-3CF7-4120-8993-081271A5101D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{37A1C202-5D95-4DB6-9A85-DFAE0903D9E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{482ABFC2-9CBA-4832-A0C7-503C53342F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{482ABFC2-9CBA-4832-A0C7-503C53342F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{482ABFC2-9CBA-4832-A0C7-503C53342F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{482ABFC2-9CBA-4832-A0C7-503C53342F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8C26517-6521-4982-9C68-942FB4185C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8C26517-6521-4982-9C68-942FB4185C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8C26517-6521-4982-9C68-942FB4185C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8C26517-6521-4982-9C68-942FB4185C6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{668BF743-C085-4FA4-A037-80D58136BB35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{668BF743-C085-4FA4-A037-80D58136BB35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{668BF743-C085-4FA4-A037-80D58136BB35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{668BF743-C085-4FA4-A037-80D58136BB35}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{482ABFC2-9CBA-4832-A0C7-503C53342F01} = {37A1C202-5D95-4DB6-9A85-DFAE0903D9E2}
+		{A8C26517-6521-4982-9C68-942FB4185C6B} = {4FCF4DA4-3CF7-4120-8993-081271A5101D}
+		{668BF743-C085-4FA4-A037-80D58136BB35} = {34FB79A1-2C71-4903-B032-F57276A8B655}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5CB2180-E9E5-4157-AB60-43EEBC2EB74C}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,176 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.FileViewModel
+
+@if (this.Layout != null)
+{
+    ViewBag.IsModal = false;
+    this.Layout = "_MasterLayout";
+}
+<div class="clearfix"></div>
+
+<div class="modal-content">
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">@(Model.ShowCamera ? "Take Snapshot or Upload" : "Upload")</h4>
+        <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="x_content">
+            @if (Model.ShowCamera)
+            {
+
+                @Html.HiddenFor(m => m.FormControlToUpdate)
+                @Html.HiddenFor(m => m.ImageControlToUpdate)
+
+                <div class="row">
+                    Capture from camera: <input type="checkbox" id="captureFromCamera" />
+                </div>
+
+                <div class="row" id="divCamera">
+                    <div class="col-md-6 col-sm-6">
+                        <div id="livecamera"></div>
+                        @using (Html.BeginForm(FormMethod.Post, new { id = "form-dialog" }))
+                        {
+                            @Html.HiddenFor(m => m.Identifier)
+                            @Html.HiddenFor(m => m.BlobFileUri, new { @class = "form-control" })
+                        }
+                        <br />
+                        <button id="retake" class="btn btn-info">Retake</button>
+                        <button id="takeSnapshot" class="btn btn-info">Take Snapshot</button>
+                    </div>
+                    <div class="col-md-6 col-sm-6 ">
+                        <div id="results">Your captured photo will appear here.</div>
+                        <br />
+                        <button id="uploadSnapshot" class="btn btn-warning">Upload Snapshot</button>
+                    </div>
+                </div>
+            }
+            <div class="row" id="divFile">
+                <form id="upload" enctype="multipart/form-data" action="@Url.Action("Upload", "Files", new { folder = Model.Folder })" method="POST">
+                    @Html.LabelFor(model => model.File, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.File, new { type = "file", accept = Model.FileTypeFilter, @class = "btn btn-info" })
+                        @Html.ValidationMessageFor(m => m.File)
+                        @Html.HiddenFor(m => m.RedirectOnSuccess)
+                        @Html.HiddenFor(m => m.Folder)
+                        <input type="submit" class="btn btn-warning" value="Upload file" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" name="close" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script language="javascript">
+    $('#captureFromCamera').change(function () {
+        $('#divCamera').toggle(this.checked);
+        $('#divFile').toggle(!this.checked);
+        if (this.checked) {
+            Webcam.set({
+                width: 320,
+                height: 240,
+                image_format: 'jpeg',
+                jpeg_quality: 90
+
+            });
+            Webcam.attach('#livecamera');
+        }
+        else {
+            Webcam.reset();
+        }
+    }).change();
+
+    var snapshotdata;
+
+    $('#uploadSnapshot').hide();
+    $('#retake').hide();
+    $("#takeSnapshot").click(function () {
+        // take snapshot and get image data
+        Webcam.snap(function (data_uri) {
+            // display results in page
+            $('#results').html(
+                '<img src="' +
+                data_uri +
+                '"/>');
+            snapshotdata = data_uri;
+            $('#uploadSnapshot').prop('disabled', false);
+            $('#uploadSnapshot').text('Upload Snapshot');
+            $('#uploadSnapshot').show();
+        });
+    });
+    $("#uploadSnapshot").click(function () {
+        $('#uploadSnapshot').text('Uploading...');
+        Webcam.upload(snapshotdata,
+            '@Url.Action("Upload", "Files", new { folder = Model.Folder })',
+            function (code, text) {
+                var value = text.replace(/\"/g, '');
+                $('#' + '@Model.FormControlToUpdate').val(value);
+                $('#' + '@Model.ImageControlToUpdate').attr({ "src": value });
+                $('#uploadSnapshot').prop('disabled', true);
+                $('#uploadSnapshot').text('Uploaded');
+                $('#takeSnapshot').prop('disabled', true);
+                $('#retake').show();
+                Webcam.freeze();
+            });
+
+        Webcam.on('uploadProgress', function (progress) {
+            $('#uploadSnapshot').text('Uploading...' + progress * 100 + '%');
+        });
+
+        Webcam.on('uploadComplete', function (code, text) {
+            $('#uploadSnapshot').text('Uploaded');
+        });
+    });
+
+    $("#retake").click(function () {
+        Webcam.unfreeze();
+        $('#takeSnapshot').prop('disabled', false);
+        $('#retake').hide();
+    });
+
+    $('#upload').submit(function (e) {       
+        e.preventDefault(); // stop the standard form submission
+        $('#upload').validate();
+        if (!$('#upload').valid()) {
+            return false; //Check first if the form is valid, otherwise return false which will redirect to validation
+        }
+        $.ajax({
+            url: this.action,
+            type: this.method,
+            data: new FormData(this),
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                console.log(data);
+                var value = data.replace(/\"/g, '');
+                if ('@Model.RedirectOnSuccess' != '') {
+                    window.location = '@Model.RedirectOnSuccess';
+                }
+                else {
+                    $('#' + '@Model.FormControlToUpdate').val(value);
+                    $('#' + '@Model.ImageControlToUpdate').attr({ "src": value });
+                }
+            },
+            error: function (xhr, error, status) {
+                console.log(error, status);
+            }
+        });
+        return false;
+    });
+
+</script>

@@ -1,0 +1,59 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model IEnumerable<BitNetServices.Alpa.EHS.Common.Model.Tenant.Master.HazardCategoryModel>
+<!-- page content -->
+<div class="x_content">
+    <div class="table-responsive">
+        <table id="datatable-buttons" class="table table-striped jambo_table bulk_action" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Name</th>                   
+                    <th>Created On</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model != null)
+                    {
+
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>                               
+                                <td>
+                                    @item.CreatedOn
+                                </td>
+                                <td>
+                                    @if (item.IsEditable)
+                                    {
+                                        <a class="masterEdit" data-toggle="modal" data-target=".bs-example-modal-lg.hazardcategory" data-id="@item.RowId" data-ctr="hazardcategory" href="#">Edit</a>
+                                        <div class="delete-section">
+                                            <a class="delete-link" href="@Url.Action("removehazardcategory", new {id = item.HazardCategoryId})" data-ctr="hazardcategory/remove">Delete</a>
+                                            <div class="btn btn-primary delete-confirm" style="display:none" data-delete-id="@item.HazardCategoryId">Confirm Delete</div>
+                                        </div>                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- page content -->
+<div class="modal fade bs-example-modal-lg hazardcategory" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" id="masterModalContent-hazardcategory">
+
+    </div>
+</div>

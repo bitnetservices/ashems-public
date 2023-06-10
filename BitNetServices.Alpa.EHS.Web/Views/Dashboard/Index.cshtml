@@ -1,0 +1,84 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.DashboardViewModel
+
+@{
+    Layout = "_DashboardLayout";
+}
+
+
+
+<!-- top tiles -->
+<div class="row" style="display: inline-block;">
+    <div class="tile_count">
+        <div class="col-md-2 col-sm-4  tile_stats_count">
+            <span class="count_top"><i class="fa fa-user"></i> Total Haz/Inc</span>
+            <div class="count">@Model.HazardIncidentCount</div>
+
+        </div>
+        <div class="col-md-2 col-sm-4  tile_stats_count">
+            <span class="count_top"><i class="fa fa-clock-o"></i> Avg Time (hrs)</span>
+            <div class="count">@Model.HazardIncidentAverageClosingTime</div>
+
+        </div>
+        <div class="col-md-2 col-sm-4  tile_stats_count" id="fk2">
+            <span class="count_top"><i class="fa fa-user"></i> Need Attention</span>
+            <div class="count green">@Model.NeedAttention</div>
+        </div>
+        <div class="col-md-2 col-sm-4  tile_stats_count" id="fk3">
+            <span class="count_top"><i class="fa fa-user"></i> Your Department</span>
+            <div class="count">@Model.YourDepartment</div>
+        </div>
+        <div class="col-md-2 col-sm-4  tile_stats_count" id="fk4">
+            <span class="count_top"><i class="fa fa-user"></i> Under Investigation</span>
+            <div class="count">@Model.UnderInvestigation </div>
+           
+        </div>
+        <div class="col-md-2 col-sm-4  tile_stats_count" id="fk5">
+            <span class="count_top"><i class="fa fa-user"></i> Investigated</span>
+            <div class="count">@Model.InvestigationFinished</div>
+            
+        </div>
+    </div>
+</div>
+<!-- /top tiles -->
+<div class="clearfix"></div>
+<!-- /top tiles -->
+<div class="row">
+    <div class="col-md-6 col-sm-6  ">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Hazard And Incidents <small>By Stage</small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <canvas id="chartHazardIncidentByStage" data-charts='@Html.Raw(Json.Serialize(Model.ChartHazardIncidentByStage))' data-chartype="pie"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-sm-6  ">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Hazard And Incidents <small>By Category</small></h2>
+                <ul class="nav navbar-right panel_toolbox">
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <canvas id="chartHazardIncidentByType" data-charts='@Html.Raw(Json.Serialize(Model.ChartHazardIncidentByType))' data-chartype="pie"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+

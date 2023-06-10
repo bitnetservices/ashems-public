@@ -1,0 +1,119 @@
+﻿@using System.Globalization
+@using System.Security.Policy
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Mvc.Localization
+@using BitNetServices.Alpa.EHS.Common.Models
+@using BitNetServices.Alpa.EHS.Web
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+
+@inject IViewLocalizer Localizer
+
+@model BitNetServices.Alpa.EHS.Web.Tenant.Models.HazardIncidentSummaryViewModel
+
+@{
+    Layout = "_HazardIncident";
+}
+
+<div class="page-title">
+    <div class="title_left">
+        <h3>Hazard and Incident Management</h3>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            <table id="datatable-buttons" class="table table-striped table-light" style="width:100%">
+                <thead>
+                    <tr>
+
+                        <th>Reported By</th>
+                        <th>Reported on/at</th>
+                        <th>Location/Area</th>
+                        <th>Hazard Category</th>
+                        <th>Department</th>
+                        <th>Employee</th>
+                        <th>Stage</th>
+                        <th>Created On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model != null)
+                        {
+
+                            foreach (var item in Model.HazardIncidents)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.ReportedBy
+                                    </td>
+                                    <td>
+                                        @item.ReportingDate.ToString("dd/MM/yyyy") at
+                                        @item.IncidentDate?.ToString("HH:mm tt")
+                                    </td>
+                                    <td>
+                                        @item.LocationOfHazard.Name /
+                                        @item.AreaOrBuilding.Name
+                                    </td>
+                                    <td>
+                                        @item.CategoryOfHazard?.Name
+                                    </td>
+                                    <td>
+                                        @item.ResponsibleDepartment?.Name
+                                        @item.ResponsibleIncidentDepartment?.Name
+                                    </td>
+                                    <td>
+                                        @item.EmployeeAssigned?.Name
+                                        @item.IncidentEmployeeAssigned?.Name
+                                    </td>
+
+                                    <td>
+                                        @item.HazardIncidentStage?.Name
+                                    </td>
+                                    <td>
+                                        @item.CreatedOn.ToString("dd/MM/yyyy HH:mm tt")
+                                    </td>
+                                    <td>
+                                        @if (item.CategoryOfHazardId != 5)
+                                        {
+                                            @if (item.CreatedBy == Model.User.Employee.RowId
+                                     && (item.ResponsibleIncidentDepartmentId != null || item.ResponsibleDepartmentId != null))
+                                            {
+                                                @Html.ActionLink("Edit | ", "Create", "HazardIncidents", new { id = item.HazardIncidentFormat })
+
+                                            }
+                                            @if (item.HazardIncidentStageId < 4)
+                                            {
+                                                if ((item.ResponsibleDepartmentId == Model.User.Employee.DepartmentId)
+                                           || (item.ResponsibleIncidentDepartmentId == Model.User.Employee.DepartmentId))
+                                                {
+                                                    if (Model.User.SecurityRole.Name == "Approver"
+                                                        || Model.User.SecurityRole.Name == "Admin")
+                                                    {
+                                                        @Html.ActionLink("Assign | ", "assign", "HazardIncidents", new { id = item.HazardIncidentFormat })
+                                                    }
+                                                }
+
+                                                if ((item.EmployeeAssignedId != null || item.IncidentEmployeeAssignedId != null)
+                                                && (item.ResponsibleDepartmentId == Model.User.Employee.DepartmentId
+                                                || item.ResponsibleIncidentDepartmentId == Model.User.Employee.DepartmentId))
+                                                {
+                                                    @Html.ActionLink("Complete | ", "update", "HazardIncidents", new { id = item.HazardIncidentFormat })
+                                                }
+                                            }
+                                        }
+                                        @Html.ActionLink("View PDF", "HazardPdf", "HazardIncidents", new { @id = item.HazardIncidentFormat }, htmlAttributes: new { @target = "_blank" })
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
